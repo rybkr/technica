@@ -1,0 +1,54 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-boxes}[2026/06/23 Technica callout boxes]
+
+% This module owns callout environments.
+%
+% Public API:
+%   note          neutral supporting information
+%   explanation   deeper explanation or mental model
+%   advice        recommendation or best practice
+%   warning       risk, pitfall, or footgun
+%
+% Notes:
+% - Change the shared helper if all callouts should look different.
+% - Add new callout types by wrapping technica-callout with a semantic name.
+
+\RequirePackage{mdframed}
+
+\newenvironment{technica-callout}[2]
+{
+  \begin{mdframed}[
+    linecolor=#1,
+    linewidth=3pt,
+    backgroundcolor=#1!10,
+    topline=false,
+    rightline=false,
+    bottomline=false,
+    innertopmargin=8pt,
+    innerbottommargin=8pt,
+    innerrightmargin=15pt,
+    innerleftmargin=12pt
+  ]
+  \textbf{#2}\par
+}
+{
+  \end{mdframed}
+}
+
+\newenvironment{note}
+  {\begin{technica-callout}{TechnicaNote}{Note}}
+  {\end{technica-callout}}
+
+\newenvironment{explanation}
+  {\begin{technica-callout}{TechnicaExplanation}{Explanation}}
+  {\end{technica-callout}}
+
+\newenvironment{advice}
+  {\begin{technica-callout}{TechnicaAdvice}{Advice}}
+  {\end{technica-callout}}
+
+\newenvironment{warning}
+  {\begin{technica-callout}{TechnicaWarning}{Warning}}
+  {\end{technica-callout}}
+
+\endinput

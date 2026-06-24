@@ -1,0 +1,34 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-layout}[2026/06/23 Technica document layout]
+
+% This module owns page-level defaults: margins, paragraph spacing, captions,
+% and section typography.
+
+\RequirePackage{geometry}
+\RequirePackage{caption}
+\RequirePackage{titlesec}
+
+\geometry{margin=1in}
+
+\captionsetup{
+  labelfont=bf,
+  font=small
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% Slightly tighter technical-document headings without making a custom class.
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {\thesection}
+  {0.75em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}
+  {\thesubsection}
+  {0.75em}
+  {}
+
+\endinput

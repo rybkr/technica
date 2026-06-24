@@ -1,0 +1,36 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-colors}[2026/06/23 Technica color palette]
+
+% This module owns the named color palette.
+%
+% Notes:
+% - Prefer changing color definitions here instead of editing individual boxes
+%   and code styles in order to maintain consistency.
+
+\RequirePackage[table,dvipsnames,svgnames,x11names]{xcolor}
+
+% Neutral surfaces.
+\definecolor{TechnicaPaper}{RGB}{255,255,255}
+\definecolor{TechnicaInk}{RGB}{31,35,40}
+\definecolor{TechnicaMutedInk}{RGB}{91,99,112}
+\definecolor{TechnicaCodeBg}{RGB}{245,247,250}
+\definecolor{TechnicaCodeBorder}{RGB}{180,182,190}
+\definecolor{TechnicaTerminalBg}{RGB}{252,246,229}
+
+% Callout colors.
+\definecolor{TechnicaNote}{RGB}{35,80,150}
+\definecolor{TechnicaExplanation}{RGB}{65,120,140}
+\definecolor{TechnicaAdvice}{RGB}{190,92,45}
+\definecolor{TechnicaWarning}{RGB}{190,55,45}
+
+% Syntax colors. These are intentionally conservative for print and projection.
+\definecolor{TechnicaKeyword}{RGB}{116,69,156}
+\definecolor{TechnicaType}{RGB}{190,96,25}
+\definecolor{TechnicaOperator}{RGB}{20,80,145}
+\definecolor{TechnicaLiteral}{RGB}{185,65,45}
+\definecolor{TechnicaString}{RGB}{35,125,75}
+\definecolor{TechnicaComment}{RGB}{65,120,140}
+\definecolor{TechnicaPrompt}{RGB}{135,105,55}
+\definecolor{TechnicaCommand}{RGB}{25,125,80}
+
+\endinput

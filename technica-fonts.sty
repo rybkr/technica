@@ -1,0 +1,35 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-fonts}[2026/06/23 Technica font configuration]
+
+% This module owns font selection.
+%
+% Notes:
+% - XeLaTeX or LuaLaTeX is recommended for best font behavior. pdfLaTeX is
+%   supported with a simpler fallback setup.
+% - Avoid absolute font paths. They make packages non-portable. Prefer system
+%   font names or document how to install bundled fonts.
+
+\RequirePackage{iftex}
+
+\ifPDFTeX
+  % pdfLaTeX fallback. This keeps the package usable in older toolchains.
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+  \RequirePackage{kpfonts}
+\else
+  % XeLaTeX/LuaLaTeX path. The preferred fonts are common but not universal.
+  % If it is missing, keep the fonts supplied by the TeX font package or
+  % define a fallback option.
+  \RequirePackage{fontspec}
+  \RequirePackage{kpfonts}
+
+  \IfFontExistsTF{Source Serif 4}
+    {\setmainfont{Source Serif 4}}
+    {\setmainfont{TeX Gyre Pagella}}
+
+  \IfFontExistsTF{JetBrains Mono}
+    {\setmonofont{JetBrains Mono}[Scale=0.85]}
+    {}
+\fi
+
+\endinput

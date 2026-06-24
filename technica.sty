@@ -1,0 +1,29 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica}[2026/06/23 Technical writing style system]
+
+% technica is the public entry point for the package. Documents should load
+% only this file:
+%
+%   \usepackage{technica}
+%
+% The implementation is split into focused modules.
+
+% Core packages used across multiple modules.
+\RequirePackage{iftex}
+\RequirePackage{graphicx}
+\RequirePackage{amsmath}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{longtable}
+\RequirePackage{hyperref}
+
+% Internal modules. The order matters: colors are referenced by later modules,
+% fonts affect code sizing, and macros may rely on code styles being available.
+\RequirePackage{technica-colors}
+\RequirePackage{technica-fonts}
+\RequirePackage{technica-layout}
+\RequirePackage{technica-code}
+\RequirePackage{technica-boxes}
+\RequirePackage{technica-macros}
+
+\endinput

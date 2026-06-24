@@ -1,0 +1,22 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-macros}[2026/06/23 Technica semantic prose macros]
+
+% This module owns lightweight semantic prose commands.
+%
+% Public API:
+%   \term{...}       first-use or important technical term
+%   \filepath{...}   file or directory path
+%   \command{...}    command name or short invocation
+%   \api{...}        function, type, method, endpoint, or other API surface
+%   \key{...}        keyboard key
+%
+% Notes:
+% - Add commands for recurring concepts in your documents.
+
+\newcommand{\term}[1]{\textbf{#1}}
+\newcommand{\filepath}[1]{\texttt{#1}}
+\newcommand{\command}[1]{\texttt{#1}}
+\newcommand{\api}[1]{\texttt{#1}}
+\newcommand{\key}[1]{\textsc{#1}}
+
+\endinput
