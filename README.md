@@ -37,6 +37,13 @@ which language definitions to load through `codeopts`:
 \usepackage[codeopts={languages={cxx,sh}}]{technica}
 ```
 
+Semantic prose macros are enabled by default. Disable them with `macros=false`,
+or choose which macro sets to load through `macroopts`:
+
+```latex
+\usepackage[macroopts={sets=prose}]{technica}
+```
+
 ## API
 
 ### Semantic Prose
@@ -55,6 +62,21 @@ That keeps documents stable if the visual style changes later.
 ```latex
 \term{Translation units} are compiled with \command{clang++}.
 Open \filepath{src/main.cpp} and press \key{Esc}.
+```
+
+Macro sets live in `macros/*.def`. Load a set on demand with
+`\technicaloadmacroset`, then use the commands that definition provides:
+
+```latex
+\technicaloadmacroset{prose}
+```
+
+New macro files should expose semantic wrappers through the Technica factories:
+
+```latex
+\technicadefineprosemacro{concept}{\bfseries\color{TechnicaInk}}{}
+\technicadefineinlinemacro{configkey}
+\technicadefinekeymacro{shortcut}
 ```
 
 ### Inline Code

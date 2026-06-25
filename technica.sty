@@ -20,6 +20,7 @@
 \DeclareStringOption{boxopts}
 
 \DeclareBoolOption[true]{macros}
+\DeclareStringOption{macroopts}
 
 \ProcessKeyvalOptions*
 
@@ -60,7 +61,124 @@
 \fi
 
 \iftechnica@macros
+    \ifx\technica@macroopts\@empty\else
+        \PassOptionsToPackage{\technica@macroopts}{technica-macros}
+    \fi
     \RequirePackage{technica-macros}
 \fi
+
+\makeatletter
+
+\newcommand{\technica@demo@fontsample}{%
+    \subsection*{Type}%
+    This paragraph uses the document body face. It should look comfortable for
+    long technical prose, with enough contrast for emphasized terms, paths, and
+    short inline fragments.%
+
+    \iftechnica@fonts
+        {\par\technicaheadingfamily
+        This paragraph uses the Technica heading family, so font configuration
+        changes are visible without inspecting package internals.\par}%
+
+        {\par\ttfamily
+        The quick brown fox jumps over the lazy dog. 0123456789\par}%
+    \fi
+}
+
+\newcommand{\technica@demo@macrosample}{%
+    \iftechnica@macros
+        \subsection*{Semantic Prose}%
+        A \term{semantic command} marks meaning before presentation. Open
+        \filepath{src/main.c}, run \command{make test}, inspect \api{init()},
+        then press \key{Esc}.%
+    \fi
+}
+
+\newcommand{\technica@demo@colorsample}{%
+    \@ifpackageloaded{technica-colors}{%
+        \subsection*{Color}%
+        \begingroup
+        \newcommand{\technica@demo@swatch}[1]{%
+            \textcolor{##1}{\rule{1.2em}{1.2em}}%
+            \enspace\texttt{##1}\quad
+        }%
+        \noindent
+        \technica@demo@swatch{TechnicaPaper}%
+        \technica@demo@swatch{TechnicaInk}%
+        \technica@demo@swatch{TechnicaLink}%
+        \technica@demo@swatch{TechnicaCodeBg}%
+        \technica@demo@swatch{TechnicaWarning}%
+        \par
+        \endgroup
+    }{}%
+}
+
+\newcommand{\technica@demo@codesample}{%
+    \iftechnica@code
+        \subsection*{Code}%
+        Inline code such as \inlinecode{status = ok} should align with the
+        surrounding prose.%
+
+        \begin{tcolorbox}[technica-codebox,title={config.txt}]
+        {\ttfamily\small name = technica\par theme = local\par}
+        \end{tcolorbox}
+
+        \@ifundefined{inlinecxx}{}{%
+            A tiny C++ fragment, \inlinecxx{int main()}, checks language-specific
+            inline styling without making the demo about C++.%
+        }%
+
+        \@ifundefined{inlinesh}{}{%
+            \begin{tcolorbox}[
+                enhanced,
+                breakable,
+                arc=\technica@code@arc,
+                boxrule=\technica@code@boxrule,
+                colback=TechnicaTerminalBg,
+                colframe=TechnicaTerminalBorder,
+                coltitle=TechnicaInk,
+                colbacktitle=TechnicaTerminalBg,
+                fonttitle=\ttfamily\small\bfseries,
+                title=Terminal,
+                attach boxed title to top left={xshift=8pt,yshift=-2pt},
+                boxed title style={empty,left=0pt,right=0pt,top=0pt,bottom=0pt},
+                left=\technica@code@left,
+                right=\technica@code@right,
+                top=\technica@code@top,
+                bottom=\technica@code@bottom,
+                before skip=\technica@code@beforeskip,
+                after skip=\technica@code@afterskip
+            ]
+            {\ttfamily\small \$ make demo.pdf\par}
+            \end{tcolorbox}
+        }%
+    \fi
+}
+
+\newcommand{\technica@demo@boxsample}{%
+    \iftechnica@boxes
+        \subsection*{Callouts}%
+        \begin{note}
+        Notes hold supporting information that should remain close to the main
+        explanation.
+        \end{note}
+
+        \begin{warning}
+        Warnings make risks visible without changing the surrounding document
+        structure.
+        \end{warning}
+    \fi
+}
+
+\newcommand{\technicademo}{%
+    \section*{Technica Demo}%
+    \technica@demo@fontsample
+    \technica@demo@macrosample
+    \technica@demo@colorsample
+    \technica@demo@codesample
+    \technica@demo@boxsample
+}
+
+\makeatother
 
 \endinput

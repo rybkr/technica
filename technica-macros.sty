@@ -1,22 +1,112 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-macros}[2026/06/23 Technica semantic prose macros]
+\ProvidesPackage{technica-macros}[2026/06/25 Technica semantic prose macros]
 
-% This module owns lightweight semantic prose commands.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Owns shared helpers for lightweight semantic prose commands. Concrete command
+% sets live in macros/*.def so documents can add domain-specific vocabularies
+% without growing this package into a long list of one-off macros.
 %
 % Public API:
-%   \term{...}       first-use or important technical term
-%   \filepath{...}   file or directory path
-%   \command{...}    command name or short invocation
-%   \api{...}        function, type, method, endpoint, or other API surface
-%   \key{...}        keyboard key
+%   \technicaloadmacroset{<name>}
+%     Loads macros/<name>.def once. Shipping set: prose.
 %
-% Notes:
-% - Add commands for recurring concepts in your documents.
+%   \technicadefineprosemacro{<command>}{<before>}{<after>}
+%     Defines \<command>{...}, wrapping its argument in <before> and <after>.
+%
+%   \technicadefineinlinemacro{<command>}
+%     Defines \<command>{...} using Technica's unboxed monospace inline style.
+%
+%   \technicadefinekeymacro{<command>}
+%     Defines \<command>{...} using Technica's compact keyboard-label style.
+%
+%   \term{...}       first-use/important technical term (from macros/prose.def)
+%   \filepath{...}   file or directory path (from macros/prose.def)
+%   \command{...}    command name or short invocation (from macros/prose.def)
+%   \api{...}        function, type, method, endpoint, or API surface
+%   \key{...}        keyboard key (from macros/prose.def)
+% ------------------------------------------------------------------------------
 
-\newcommand{\term}[1]{\textbf{#1}}
-\newcommand{\filepath}[1]{\texttt{#1}}
-\newcommand{\command}[1]{\texttt{#1}}
-\newcommand{\api}[1]{\texttt{#1}}
-\newcommand{\key}[1]{\textsc{#1}}
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@macros@}
+
+% ------------------------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------------------------
+% sets:       Comma-separated macro definition set names to load from macros/.
+%             Empty disables built-in macro loading.
+%
+% keypadding: \fboxsep value for keyboard-label macros.
+% keyrule:    \fboxrule value for keyboard-label macros.
+% ------------------------------------------------------------------------------
+
+\DeclareStringOption[prose]{sets}
+\DeclareStringOption[1.25pt]{keypadding}
+\DeclareStringOption[0.5pt]{keyrule}
+
+\ProcessKeyvalOptions*
+
+\RequirePackage{technica-colors}
+
+\makeatletter
+
+\newcommand{\technicainline}[1]{%
+    \begingroup
+    \texttt{\detokenize{#1}}%
+    \endgroup
+}
+
+\newcommand{\technicakeylabel}[1]{%
+    \begingroup
+    \setlength{\fboxsep}{\technica@macros@keypadding}%
+    \setlength{\fboxrule}{\technica@macros@keyrule}%
+    \raisebox{0.25ex}{%
+        \fcolorbox{TechnicaInlineBorder}{TechnicaInlineBg}{%
+            \sffamily\scriptsize\strut\MakeUppercase{#1}%
+        }%
+    }%
+    \endgroup
+}
+
+\newcommand{\technicadefineprosemacro}[3]{%
+    \expandafter\newcommand\csname #1\endcsname[1]{%
+        \begingroup
+        #2##1#3%
+        \endgroup
+    }%
+}
+
+\newcommand{\technicadefineinlinemacro}[1]{%
+    \expandafter\newcommand\csname #1\endcsname[1]{%
+        \technicainline{##1}%
+    }%
+}
+
+\newcommand{\technicadefinekeymacro}[1]{%
+    \expandafter\newcommand\csname #1\endcsname[1]{%
+        \technicakeylabel{##1}%
+    }%
+}
+
+\newcommand{\technicaloadmacroset}[1]{%
+    \@ifundefined{technica@macros@set@#1@loaded}{%
+        \InputIfFileExists{macros/#1.def}{%
+            \expandafter\gdef\csname technica@macros@set@#1@loaded\endcsname{1}%
+        }{%
+            \PackageError{technica-macros}{Macro set `#1' not found}{%
+                No file macros/#1.def was found on the TeX path.%
+            }%
+        }%
+    }{}%
+}
+
+\ifx\technica@macros@sets\@empty\else
+    \@for\technica@macros@set:=\technica@macros@sets\do{%
+        \technicaloadmacroset{\technica@macros@set}%
+    }%
+\fi
+
+\makeatother
 
 \endinput
