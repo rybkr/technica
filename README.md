@@ -1,34 +1,86 @@
 # Technica
 
-Technica is a small LaTeX style system for technical writing: tutorials, course notes, reference material, engineering reports, and code-heavy articles.
+Technica is a small LaTeX style system for technical documents: tutorials,
+course notes, reference material, engineering reports, and code-heavy articles.
+It provides a restrained page layout, semantic prose commands, code listings,
+terminal sessions, and callouts behind one package entry point.
 
-The public entry point is:
+Load it with:
 
 ```latex
 \usepackage{technica}
 ```
 
-## Public API
+XeLaTeX or LuaLaTeX is recommended for best font selection. pdfLaTeX is
+supported with fallback fonts.
 
-Inline technical prose:
-
-```latex
-\term{translation unit}
-\filepath{src/main.cpp}
-\command{clang++}
-\api{std::vector}
-\key{Esc}
-```
-
-Inline code:
+Technica defaults to a 7in by 10in page. Pass layout options through
+`layoutopts`; use a named geometry paper size with `papersize`, or provide
+custom dimensions with `paperwidth` and `paperheight`:
 
 ```latex
-\inlinecode{generic code}
-\inlinecxx{std::vector<int>}
-\inlinesh{clang++ main.cpp}
+\usepackage[layoutopts={papersize=letterpaper}]{technica}
+\usepackage[layoutopts={paperwidth=6in,paperheight=9in}]{technica}
 ```
 
-Block environments:
+Callout boxes are enabled by default. Disable them with `boxes=false`, or pass
+box tuning options through `boxopts`:
+
+```latex
+\usepackage[boxopts={backmix=8,leftrule=4pt}]{technica}
+```
+
+## API
+
+### Semantic Prose
+
+Use these commands to mark technical prose by meaning instead of presentation.
+That keeps documents stable if the visual style changes later.
+
+| Command | Use for | Example |
+| --- | --- | --- |
+| `\term{...}` | Important terms or first-use definitions | `\term{translation unit}` |
+| `\filepath{...}` | File and directory paths | `\filepath{src/main.cpp}` |
+| `\command{...}` | Command names or short invocations | `\command{clang++}` |
+| `\api{...}` | APIs, types, functions, methods, endpoints | `\api{std::vector}` |
+| `\key{...}` | Keyboard keys | `\key{Esc}` |
+
+```latex
+\term{Translation units} are compiled with \command{clang++}.
+Open \filepath{src/main.cpp} and press \key{Esc}.
+```
+
+### Inline Code
+
+Use inline code commands for short snippets inside paragraphs. Prefer these for
+brief fragments and the block environments for anything multi-line.
+
+| Command | Use for | Example |
+| --- | --- | --- |
+| `\inlinecode{...}` | Generic inline code | `\inlinecode{return value;}` |
+| `\inlinecxx{...}` | Inline C++ | `\inlinecxx{std::vector<int>}` |
+| `\inlinesh{...}` | Inline shell text | `\inlinesh{clang++ main.cpp}` |
+
+```latex
+Call \inlinecxx{std::vector<int>::push_back} from the loop.
+Run \inlinesh{clang++ main.cpp} to build the example.
+```
+
+### Code Blocks
+
+#### `codeblock`
+
+Generic titled code block.
+
+```latex
+\begin{codeblock}{config.txt}
+name = technica
+\end{codeblock}
+```
+
+#### `cxx`
+
+C++ code block with a title, usually a filename.
 
 ```latex
 \begin{cxx}{main.cpp}
@@ -36,12 +88,33 @@ int main() {
     return 0;
 }
 \end{cxx}
+```
 
+#### `terminal`
+
+Terminal session block.
+
+```latex
 \begin{terminal}
 $ clang++ main.cpp
 $ ./a.out
 \end{terminal}
+```
 
+### Callouts
+
+Callout environments add labeled sidebars for common kinds of technical notes.
+Choose the semantic environment that matches the role of the paragraph, not the
+color you want.
+
+| Environment | Use for |
+| --- | --- |
+| `note` | Neutral supporting information |
+| `explanation` | Deeper explanation or mental model |
+| `advice` | Recommendation or convention |
+| `warning` | Risk, pitfall, or common mistake |
+
+```latex
 \begin{note}
 Supporting information.
 \end{note}
@@ -59,6 +132,37 @@ A risk, pitfall, or common mistake.
 \end{warning}
 ```
 
+Define a domain-specific callout with `\technicadefinecallout`. The first
+argument is the environment name, the second is the displayed label, and the
+third is any `xcolor` color, including Technica palette colors:
+
+```latex
+\technicadefinecallout{tip}{Tip}{TechnicaAdvice}
+
+\begin{tip}
+A short recommendation specific to this document.
+\end{tip}
+```
+
+### Colors
+
+Technica colors are named `xcolor` colors. Redefine them after
+`\usepackage{technica}` and before `\begin{document}`:
+
+```latex
+\technicadefinecolor{TechnicaMist}{F8FAF9}
+\technicadefinecolor{TechnicaKeyword}{293BB5}
+```
+
+Some colors can alias others, so related surfaces stay together:
+
+```latex
+\technicaaliascolor{TechnicaCodeBg}{TechnicaMist}
+```
+
+Use `\technicadefinecolor` instead of raw `\definecolor` for Technica colors so
+demo swatches and color aliases keep their recorded hex values in sync.
+
 ## Development Usage
 
 From a consuming repository, point `TEXINPUTS` at this checkout:
@@ -67,25 +171,8 @@ From a consuming repository, point `TEXINPUTS` at this checkout:
 TEXINPUTS=/path/to/technica//: xelatex chapters/example/example.tex
 ```
 
-Then documents can use the clean package name:
-
-```latex
-\usepackage{technica}
-```
-
-To compile the included example from this repository:
+Build the local demo PDF with:
 
 ```sh
-cd examples
-TEXINPUTS=..//: xelatex article.tex
+make demo.pdf
 ```
-
-To compile the smoke test:
-
-```sh
-cd test
-TEXINPUTS=..//: xelatex smoke.tex
-```
-
-XeLaTeX or LuaLaTeX is recommended. pdfLaTeX has a fallback path, but system
-font selection is better with modern engines.

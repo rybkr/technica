@@ -1,54 +1,112 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-boxes}[2026/06/23 Technica callout boxes]
+\ProvidesPackage{technica-boxes}[2026/06/25 Technica callout boxes]
 
-% This module owns callout environments.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Owns semantic callout environments. Built-in and user-defined callouts share
+% one visual treatment so documents can add domain-specific boxes without
+% forking the house style.
 %
 % Public API:
+%   \technicadefinecallout{<environment>}{<title>}{<color>}
+%     Defines a new callout environment with the displayed <title> and any
+%     xcolor-compatible <color>, including Technica palette colors.
+%
+%   technica-callout
+%     Low-level environment: \begin{technica-callout}{<color>}{<title>} ...
+%
 %   note          neutral supporting information
 %   explanation   deeper explanation or mental model
 %   advice        recommendation or best practice
 %   warning       risk, pitfall, or footgun
+% ------------------------------------------------------------------------------
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@boxes@}
+
+% ------------------------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------------------------
+% arc:         Corner radius passed to tcolorbox.
+% backmix:     Percentage of the callout color mixed into TechnicaPaper.
+% titlemix:    Percentage of the callout color mixed into TechnicaPaper for the
+%              title backing.
+% leftrule:    Width of the semantic color rule.
 %
-% Notes:
-% - Change the shared helper if all callouts should look different.
-% - Add new callout types by wrapping technica-callout with a semantic name.
+% left, right, top, bottom:
+%              Interior padding values passed to tcolorbox.
+%
+% beforeskip, afterskip:
+%              Vertical skips around each callout.
+% ------------------------------------------------------------------------------
 
-\RequirePackage{mdframed}
+\DeclareStringOption[3pt]{arc}
+\DeclareStringOption[6]{backmix}
+\DeclareStringOption[6]{titlemix}
+\DeclareStringOption[3pt]{leftrule}
 
-\newenvironment{technica-callout}[2]
-{
-  \begin{mdframed}[
-    linecolor=#1,
-    linewidth=3pt,
-    backgroundcolor=#1!10,
-    topline=false,
-    rightline=false,
-    bottomline=false,
-    innertopmargin=8pt,
-    innerbottommargin=8pt,
-    innerrightmargin=15pt,
-    innerleftmargin=12pt
-  ]
-  \textbf{#2}\par
+\DeclareStringOption[10pt]{left}
+\DeclareStringOption[12pt]{right}
+\DeclareStringOption[8pt]{top}
+\DeclareStringOption[8pt]{bottom}
+
+\DeclareStringOption[10pt plus 2pt minus 1pt]{beforeskip}
+\DeclareStringOption[10pt plus 2pt minus 1pt]{afterskip}
+
+\ProcessKeyvalOptions*
+
+\RequirePackage{technica-colors}
+\RequirePackage[many]{tcolorbox}
+
+\tcbuselibrary{breakable,skins}
+
+\providecommand{\technicaheadingfamily}{\sffamily}
+
+\tcbset{
+    technica-callout-style/.style 2 args={
+        enhanced,
+        breakable,
+        arc=\technica@boxes@arc,
+        colback=#1!\technica@boxes@backmix!TechnicaPaper,
+        colframe=#1,
+        boxrule=0pt,
+        leftrule=\technica@boxes@leftrule,
+        left=\technica@boxes@left,
+        right=\technica@boxes@right,
+        top=\technica@boxes@top,
+        bottom=\technica@boxes@bottom,
+        before skip=\technica@boxes@beforeskip,
+        after skip=\technica@boxes@afterskip,
+        title={#2},
+        coltitle=#1!85!TechnicaInk,
+        colbacktitle=#1!\technica@boxes@titlemix!TechnicaPaper,
+        fonttitle=\technicaheadingfamily\small\bfseries,
+        attach boxed title to top left={xshift=10pt,yshift=-2pt},
+        boxed title style={
+            empty,
+            left=0pt,
+            right=0pt,
+            top=0pt,
+            bottom=1pt
+        }
+    }
 }
-{
-  \end{mdframed}
+
+\newtcolorbox{technica-callout}[2]{%
+    technica-callout-style={#1}{#2}%
 }
 
-\newenvironment{note}
-  {\begin{technica-callout}{TechnicaNote}{Note}}
-  {\end{technica-callout}}
+\newcommand{\technicadefinecallout}[3]{%
+    \newtcolorbox{#1}{technica-callout-style={#3}{#2}}%
+}
 
-\newenvironment{explanation}
-  {\begin{technica-callout}{TechnicaExplanation}{Explanation}}
-  {\end{technica-callout}}
+\technicadefinecallout{note}{Note}{TechnicaNote}
 
-\newenvironment{advice}
-  {\begin{technica-callout}{TechnicaAdvice}{Advice}}
-  {\end{technica-callout}}
+\technicadefinecallout{explanation}{Explanation}{TechnicaExplanation}
 
-\newenvironment{warning}
-  {\begin{technica-callout}{TechnicaWarning}{Warning}}
-  {\end{technica-callout}}
+\technicadefinecallout{advice}{Advice}{TechnicaAdvice}
+
+\technicadefinecallout{warning}{Warning}{TechnicaWarning}
 
 \endinput
