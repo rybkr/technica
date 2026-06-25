@@ -1,0 +1,5 @@
+*.aux
+*.listing
+*.log
+*.out
+*.toc

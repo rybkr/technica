@@ -30,6 +30,13 @@ box tuning options through `boxopts`:
 \usepackage[boxopts={backmix=8,leftrule=4pt}]{technica}
 ```
 
+Code blocks are enabled by default. Disable them with `code=false`, or choose
+which language definitions to load through `codeopts`:
+
+```latex
+\usepackage[codeopts={languages={cxx,sh}}]{technica}
+```
+
 ## API
 
 ### Semantic Prose
@@ -99,6 +106,29 @@ Terminal session block.
 $ clang++ main.cpp
 $ ./a.out
 \end{terminal}
+```
+
+Language-specific listings live in `languages/*.def`. Load a language on demand
+with `\technicaloadcodelanguage`, then use the environments or inline commands
+that definition provides:
+
+```latex
+\technicaloadcodelanguage{cxx}
+\begin{cxx}{main.cpp}
+int main() { return 0; }
+\end{cxx}
+```
+
+New language files should define a listings style, then expose semantic wrappers
+with `\technicadefinecodeblock` and `\technicadefineinlinecode`:
+
+```latex
+\lstdefinestyle{technica-python}{
+    style=technica-base,
+    language=Python
+}
+\technicadefinecodeblock{python}{technica-python}
+\technicadefineinlinecode{inlinepython}{technica-python}
 ```
 
 ### Callouts
