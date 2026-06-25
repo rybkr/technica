@@ -1,0 +1,18 @@
+% Technica built-in semantic prose macros.
+
+% Mark the defining or load-bearing term in nearby prose.
+\technicadefineprosemacro{term}{\bfseries\color{TechnicaInk}}{}
+
+% Mark a file, directory, or path fragment.
+\technicadefineinlinemacro{filepath}
+
+% Mark a command name or short shell invocation in prose.
+\technicadefineinlinemacro{command}
+
+% Mark a function, type, method, endpoint, or other named API surface.
+\technicadefineinlinemacro{api}
+
+% Mark a keyboard key or compact key label.
+\technicadefinekeymacro{key}
+
+\endinput
