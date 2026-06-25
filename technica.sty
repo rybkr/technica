@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica}[2026/06/24 Technical writing style system]
+\ProvidesPackage{technica}[2026/06/25 Technical writing style system]
 
 \RequirePackage{kvoptions}
 \SetupKeyvalOptions{family=technica, prefix=technica@}
@@ -13,8 +13,13 @@
 \DeclareBoolOption[true]{layout}
 \DeclareStringOption{layoutopts}
 
+\DeclareBoolOption[true]{code}
+\DeclareStringOption{codeopts}
+
 \DeclareBoolOption[true]{boxes}
 \DeclareStringOption{boxopts}
+
+\DeclareBoolOption[true]{macros}
 
 \ProcessKeyvalOptions*
 
@@ -33,6 +38,13 @@
     \RequirePackage{technica-fonts}
 \fi
 
+\iftechnica@code
+    \ifx\technica@codeopts\@empty\else
+        \PassOptionsToPackage{\technica@codeopts}{technica-code}
+    \fi
+    \RequirePackage{technica-code}
+\fi
+
 \iftechnica@boxes
     \ifx\technica@boxopts\@empty\else
         \PassOptionsToPackage{\technica@boxopts}{technica-boxes}
@@ -45,6 +57,10 @@
         \PassOptionsToPackage{\technica@layoutopts}{technica-layout}
     \fi
     \RequirePackage{technica-layout}
+\fi
+
+\iftechnica@macros
+    \RequirePackage{technica-macros}
 \fi
 
 \endinput

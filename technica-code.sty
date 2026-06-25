@@ -1,132 +1,162 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/06/23 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/06/25 Technica code and terminal styles]
 
-% This module owns code presentation.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Owns shared code presentation: base listings defaults, code-box styling, and
+% language loading. Per-language keyword/style data lives in languages/*.def so
+% adding Python, JSON, Rust, etc. does not turn this module into a keyword dump.
 %
 % Public API:
+%   \technicaloadcodelanguage{<name>}
+%     Loads languages/<name>.def once. Shipping languages: cxx, sh.
+%
+%   \technicadefinecodeblock{<environment>}{<listings-style>}
+%     Defines a titled tcolorbox/listings environment taking one title argument.
+%
+%   \technicadefineinlinecode{<command>}{<listings-style>}
+%     Defines an inline code command backed by a listings style.
+%
 %   \inlinecode{...}     generic inline code
-%   \inlinecxx{...}      inline C++
-%   \inlinesh{...}       inline shell/terminal text
+%   \inlinecxx{...}      inline C++ (from languages/cxx.def)
+%   \inlinesh{...}       inline shell/terminal text (from languages/sh.def)
 %
 %   \begin{codeblock}{Title} ... \end{codeblock}
-%   \begin{cxx}{main.cpp} ... \end{cxx}
-%   \begin{terminal} ... \end{terminal}
-%
-% Notes:
-% - Add languages by defining new listings styles and thin environments.
-% - Keep semantic aliases such as cxx/python/json separate from the visual
-%   defaults so documents can stay stable when the theme changes.
+%   \begin{cxx}{main.cpp} ... \end{cxx}      (from languages/cxx.def)
+%   \begin{terminal} ... \end{terminal}      (from languages/sh.def)
+% ------------------------------------------------------------------------------
 
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@code@}
+
+% ------------------------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------------------------
+% languages:   Comma-separated language definition names to load from languages/.
+%              Empty disables built-in language loading.
+%
+% arc:         Corner radius passed to tcolorbox.
+% boxrule:     Border width for code boxes.
+%
+% left, right, top, bottom:
+%              Interior padding values passed to tcolorbox.
+%
+% beforeskip, afterskip:
+%              Vertical skips around code boxes.
+% ------------------------------------------------------------------------------
+
+\DeclareStringOption[cxx,sh]{languages}
+\DeclareStringOption[3pt]{arc}
+\DeclareStringOption[0.6pt]{boxrule}
+\DeclareStringOption[8pt]{left}
+\DeclareStringOption[8pt]{right}
+\DeclareStringOption[8pt]{top}
+\DeclareStringOption[8pt]{bottom}
+\DeclareStringOption[10pt plus 2pt minus 1pt]{beforeskip}
+\DeclareStringOption[10pt plus 2pt minus 1pt]{afterskip}
+
+\ProcessKeyvalOptions*
+
+\RequirePackage{technica-colors}
 \RequirePackage{listings}
+\RequirePackage{textcomp}
 \RequirePackage[many]{tcolorbox}
 
-\tcbuselibrary{listings,breakable}
+\tcbuselibrary{listings,breakable,skins}
+
+\makeatletter
 
 \lstdefinestyle{technica-base}{
-  basicstyle=\ttfamily\small,
-  backgroundcolor=\color{TechnicaCodeBg},
-  showspaces=false,
-  showtabs=false,
-  showstringspaces=false,
-  breakatwhitespace=true,
-  breaklines=true,
-  tabsize=4,
-  frame=none,
-  aboveskip=0pt,
-  belowskip=0pt
+    basicstyle=\ttfamily\small\color{TechnicaInk},
+    backgroundcolor=\color{TechnicaCodeBg},
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showspaces=false,
+    showtabs=false,
+    showstringspaces=false,
+    breakatwhitespace=true,
+    breaklines=true,
+    tabsize=4,
+    frame=none,
+    aboveskip=0pt,
+    belowskip=0pt
+}
+
+\tcbset{
+    technica-codebox/.style={
+        enhanced,
+        breakable,
+        arc=\technica@code@arc,
+        boxrule=\technica@code@boxrule,
+        colback=TechnicaCodeBg,
+        colframe=TechnicaCodeBorder,
+        coltitle=TechnicaInk,
+        colbacktitle=TechnicaCodeBg,
+        fonttitle=\ttfamily\small\bfseries,
+        attach boxed title to top left={xshift=8pt,yshift=-2pt},
+        boxed title style={
+            empty,
+            left=0pt,
+            right=0pt,
+            top=0pt,
+            bottom=0pt
+        },
+        left=\technica@code@left,
+        right=\technica@code@right,
+        top=\technica@code@top,
+        bottom=\technica@code@bottom,
+        before skip=\technica@code@beforeskip,
+        after skip=\technica@code@afterskip
+    }
 }
 
 \newtcblisting{codeblock}[1]{
-  listing engine=listings,
-  listing only,
-  listing options={style=technica-base},
-  colback=TechnicaCodeBg,
-  colframe=TechnicaCodeBorder,
-  boxrule=0.8pt,
-  title={#1},
-  fonttitle=\centering\itshape\ttfamily,
-  breakable,
-  arc=4pt,
-  left=6pt,
-  right=6pt,
-  top=6pt,
-  bottom=6pt
+    listing engine=listings,
+    listing only,
+    listing options={style=technica-base},
+    technica-codebox,
+    title={#1},
 }
 
-\lstdefinestyle{technica-cxx}{
-  style=technica-base,
-  language=C++,
-  commentstyle=\color{TechnicaComment}\itshape,
-  stringstyle=\color{TechnicaString},
-  numbers=left,
-  numbersep=5pt,
-  numberstyle=\color{TechnicaCodeBorder}\footnotesize\ttfamily,
-  keywords=[2]{auto,bool,char,double,float,int,long,short,signed,unsigned,void},
-  keywords=[3]{asm,catch,class,concept,const,consteval,constexpr,constinit,continue,decltype,default,do,enum,explicit,extern,for,friend,goto,inline,mutable,namespace,noexcept,override,private,protected,public,register,requires,return,static,struct,template,try,throw,typedef,typeid,typename,union,using,virtual,volatile,while},
-  keywords=[4]{if,case,else,switch},
-  keywords=[5]{and,and_eq,bitor,bitand,compl,delete,or,or_eq,new,not,not_eq,sizeof,xor,xor_eq},
-  keywords=[6]{NULL,false,nullptr,true},
-  keywords=[7]{this},
-  keywords=[8]{operator},
-  keywordstyle=[2]\color{TechnicaType},
-  keywordstyle=[3]\color{TechnicaKeyword},
-  keywordstyle=[4]\color{TechnicaKeyword}\itshape,
-  keywordstyle=[5]\color{TechnicaOperator},
-  keywordstyle=[6]\color{TechnicaLiteral},
-  keywordstyle=[7]\color{TechnicaLiteral},
-  keywordstyle=[8]\color{TechnicaOperator}
+\newcommand{\technicadefinecodeblock}[2]{%
+    \newtcblisting{#1}[1]{%
+        listing engine=listings,
+        listing only,
+        listing options={style=#2},
+        technica-codebox,
+        title={##1},
+    }%
 }
 
-\newtcblisting{cxx}[1]{
-  listing engine=listings,
-  listing only,
-  listing options={style=technica-cxx},
-  colback=TechnicaCodeBg,
-  colframe=TechnicaCodeBorder,
-  boxrule=0.8pt,
-  title={#1},
-  fonttitle=\centering\itshape\ttfamily,
-  breakable,
-  arc=4pt,
-  left=6pt,
-  right=6pt,
-  top=6pt,
-  bottom=6pt
+\newcommand{\technicadefineinlinecode}[2]{%
+    \expandafter\newcommand\csname #1\endcsname[1]{%
+        \lstinline[style=#2,escapechar=|]|##1|%
+    }%
 }
 
-\lstdefinestyle{technica-terminal}{
-  style=technica-base,
-  backgroundcolor=\color{TechnicaTerminalBg},
-  alsoletter={/.+-},
-  keywords=[1]{$},
-  keywords=[2]{clang++,g++,cmake,make,ninja,git,grep,rg,cat,diff,wc,objdump,./a.out},
-  sensitive=true,
-  keywordstyle=[1]\color{TechnicaPrompt},
-  keywordstyle=[2]\color{TechnicaCommand},
-  stringstyle=\color{TechnicaOperator}
+\newcommand{\technicaloadcodelanguage}[1]{%
+    \@ifundefined{technica@code@language@#1@loaded}{%
+        \InputIfFileExists{languages/#1.def}{%
+            \expandafter\gdef\csname technica@code@language@#1@loaded\endcsname{1}%
+        }{%
+            \PackageError{technica-code}{Code language `#1' not found}{%
+                No file languages/#1.def was found on the TeX path.%
+            }%
+        }%
+    }{}%
 }
 
-\newtcblisting{terminal}{
-  listing engine=listings,
-  listing only,
-  listing options={style=technica-terminal},
-  colback=TechnicaTerminalBg,
-  colframe=black,
-  boxrule=0.5pt,
-  title=Terminal,
-  fonttitle=\centering\bfseries\ttfamily,
-  breakable,
-  arc=4pt,
-  left=6pt,
-  right=6pt,
-  top=6pt,
-  bottom=6pt
-}
-
-% Inline forms intentionally use semantic names so prose remains stable even if
-% the implementation switches from listings to another highlighter later.
+% Inline generic code intentionally remains language-neutral.
 \newcommand{\inlinecode}[1]{\lstinline[style=technica-base]|#1|}
-\newcommand{\inlinecxx}[1]{\lstinline[style=technica-cxx,escapechar=|]|#1|}
-\newcommand{\inlinesh}[1]{\lstinline[style=technica-terminal]|#1|}
+
+\ifx\technica@code@languages\@empty\else
+    \@for\technica@code@language:=\technica@code@languages\do{%
+        \technicaloadcodelanguage{\technica@code@language}%
+    }%
+\fi
+
+\makeatother
 
 \endinput

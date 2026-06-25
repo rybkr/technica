@@ -1,0 +1,49 @@
+% Technica shell and terminal listings language.
+
+\lstdefinestyle{technica-terminal}{
+    style=technica-base,
+    backgroundcolor=\color{TechnicaTerminalBg},
+    alsoletter={$/.+-},
+    keywords=[1]{$},
+    keywords=[2]{clang++,g++,cmake,make,ninja,git,grep,rg,cat,diff,wc,objdump,./a.out},
+    sensitive=true,
+    keywordstyle=[1]\color{TechnicaPrompt},
+    keywordstyle=[2]\color{TechnicaCommand},
+    basicstyle=\ttfamily\small\color{TechnicaInk},
+    commentstyle=\color{TechnicaComment},
+    stringstyle=\color{TechnicaCommand}
+}
+
+\newtcblisting{terminal}{
+    listing engine=listings,
+    listing only,
+    listing options={style=technica-terminal},
+    colback=TechnicaTerminalBg,
+    colframe=TechnicaTerminalBorder,
+    coltitle=TechnicaInk,
+    colbacktitle=TechnicaTerminalBg,
+    boxrule=\technica@code@boxrule,
+    title=Terminal,
+    fonttitle=\ttfamily\small\bfseries,
+    breakable,
+    enhanced,
+    arc=\technica@code@arc,
+    attach boxed title to top left={xshift=8pt,yshift=-2pt},
+    boxed title style={
+        empty,
+        left=0pt,
+        right=0pt,
+        top=0pt,
+        bottom=0pt
+    },
+    left=\technica@code@left,
+    right=\technica@code@right,
+    top=\technica@code@top,
+    bottom=\technica@code@bottom,
+    before skip=\technica@code@beforeskip,
+    after skip=\technica@code@afterskip
+}
+
+\technicadefineinlinecode{inlinesh}{technica-terminal}
+
+\endinput
