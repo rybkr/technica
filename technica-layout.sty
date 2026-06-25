@@ -15,6 +15,9 @@
 % ------------------------------------------------------------------------------
 % Package options
 % ------------------------------------------------------------------------------
+% papersize:    Named geometry paper size (for example letterpaper or a4paper).
+% paperwidth:   Passed verbatim to geometry's paperwidth key.
+% paperheight:  Passed verbatim to geometry's paperheight key.
 % margin:       Passed verbatim to geometry's margin key.
 % headheight:   Passed to geometry's headheight key.
 %
@@ -28,7 +31,10 @@
 % ------------------------------------------------------------------------------
 
 
-\DeclareStringOption[0.5in]{margin}
+\DeclareStringOption[]{papersize}
+\DeclareStringOption[7in]{paperwidth}
+\DeclareStringOption[10in]{paperheight}
+\DeclareStringOption[0.75in]{margin}
 \DeclareStringOption[14pt]{headheight}
 
 \DeclareStringOption[6pt plus 2pt minus 1pt]{parskip}
@@ -44,6 +50,8 @@
     % colorlinks=false is valid alone; no pairing requirement.
 \fi
 
+\RequirePackage{technica-colors}
+
 % ------------------------------------------------------------------------------
 % Page geometry
 % ------------------------------------------------------------------------------
@@ -51,10 +59,15 @@
 % page grids when TeX computes the text block height.
 \RequirePackage{geometry}
 \geometry{
+    paperwidth=\technica@layout@paperwidth,
+    paperheight=\technica@layout@paperheight,
     margin=\technica@layout@margin,
     headheight=\technica@layout@headheight,
     heightrounded
 }
+\ifx\technica@layout@papersize\@empty\else
+    \geometry{paper=\technica@layout@papersize}
+\fi
 \raggedbottom
 
 % ------------------------------------------------------------------------------
