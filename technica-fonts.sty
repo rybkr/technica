@@ -1,35 +1,132 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-fonts}[2026/06/23 Technica font configuration]
+\ProvidesPackage{technica-fonts}[2026/06/24 Technica font configuration]
 
-% This module owns font selection.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Centralizes Technica's font defaults while keeping documents portable.
+% XeLaTeX/LuaLaTeX get fontspec-based system font selection; pdfLaTeX gets a
+% conservative compatibility path.
+% ------------------------------------------------------------------------------
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@}
+
+% ------------------------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------------------------
+% mainfont, sansfont, monofont:
+%   Optional system font names. Empty values use Technica's defaults when the
+%   current engine can find them.
 %
-% Notes:
-% - XeLaTeX or LuaLaTeX is recommended for best font behavior. pdfLaTeX is
-%   supported with a simpler fallback setup.
-% - Avoid absolute font paths. They make packages non-portable. Prefer system
-%   font names or document how to install bundled fonts.
+% mainfontscale, sansfontscale, monofontscale:
+%   Passed through to fontspec's Scale option. Defaults favor matching x-height
+%   for sans and mono faces.
+%
+% mainfontfeatures, sansfontfeatures, monofontfeatures:
+%   Extra comma-separated fontspec features appended after Scale.
+%
+% kpfonts, kpfontsopt:
+%   pdfLaTeX-only opt-in for kpfonts, plus an optional verbatim option list
+%   passed to kpfonts before it is loaded.
+% ------------------------------------------------------------------------------
+
+\DeclareStringOption[]{mainfont}
+\DeclareStringOption[]{sansfont}
+\DeclareStringOption[]{monofont}
+
+\DeclareStringOption[1.0]{mainfontscale}
+\DeclareStringOption[MatchLowercase]{sansfontscale}
+\DeclareStringOption[MatchLowercase]{monofontscale}
+
+\DeclareStringOption[]{mainfontfeatures}
+\DeclareStringOption[]{sansfontfeatures}
+\DeclareStringOption[]{monofontfeatures}
+
+\DeclareBoolOption{kpfonts}
+\DeclareStringOption[]{kpfontsopt}
+
+\ProcessKeyvalOptions*
+
+% ------------------------------------------------------------------------------
+% Internal helpers
+% ------------------------------------------------------------------------------
+% \technica@loadfont{<setcmd>}{<useroption>}{<default>}{<scale>}{<features>}
+%
+% Loads a font through a fontspec setter such as \setmainfont.
+%
+% The <features> argument is a comma-separated fontspec list. When non-empty,
+% it is appended after Scale with a leading comma.
+%
+% Policy:
+%   - User supplied a font -> use it; raise an error if not found.
+%   - User supplied nothing -> try <default> silently; if not found,
+%     do nothing and let the engine default stand.
+\newcommand{\technica@loadfont}[5]{%
+    \ifx\@empty#5%
+        \let\technica@extrafeatures\@empty
+    \else
+        \def\technica@extrafeatures{,#5}%
+    \fi
+    \ifx\@empty#2%
+        \IfFontExistsTF{#3}{%
+            #1{#3}[Scale=#4\technica@extrafeatures]%
+        }{}%
+    \else
+        \IfFontExistsTF{#2}{%
+            #1{#2}[Scale=#4\technica@extrafeatures]%
+        }{%
+            \PackageError{technica-fonts}{Font `#2' not found}{%
+                The font `#2' is not installed on this system.%
+                Install it or remove the option to use the Technica default.%
+            }%
+        }%
+    \fi
+}
 
 \RequirePackage{iftex}
 
+% ------------------------------------------------------------------------------
+% Engine-specific setup
+% ------------------------------------------------------------------------------
 \ifPDFTeX
-  % pdfLaTeX fallback. This keeps the package usable in older toolchains.
-  \RequirePackage[T1]{fontenc}
-  \RequirePackage[utf8]{inputenc}
-  \RequirePackage{kpfonts}
+    % pdfLaTeX path: fontspec is unavailable, so named font options are ignored.
+    % kpfonts remains opt-in to avoid disrupting documents with their own math
+    % setup.
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}
+    \iftechnica@kpfonts
+        \@ifpackageloaded{kpfonts}{%
+            \PackageWarning{technica-fonts}{%
+                kpfonts was already loaded; kpfontsopt ignored%
+            }%
+        }{%
+            \ifx\@empty\technica@kpfontsopt\else
+                \PassOptionsToPackage{\technica@kpfontsopt}{kpfonts}%
+            \fi
+            \RequirePackage{kpfonts}%
+        }%
+    \fi
+    \newcommand{\technicaheadingfamily}{\sffamily}
+
 \else
-  % XeLaTeX/LuaLaTeX path. The preferred fonts are common but not universal.
-  % If it is missing, keep the fonts supplied by the TeX font package or
-  % define a fallback option.
-  \RequirePackage{fontspec}
-  \RequirePackage{kpfonts}
+    % XeLaTeX/LuaLaTeX path: full fontspec support.
+    \RequirePackage{fontspec}
+    \defaultfontfeatures{Ligatures=TeX}
 
-  \IfFontExistsTF{Source Serif 4}
-    {\setmainfont{Source Serif 4}}
-    {\setmainfont{TeX Gyre Pagella}}
+    \technica@loadfont{\setmainfont}{\technica@mainfont}{Source Serif 4}%
+        {\technica@mainfontscale}{\technica@mainfontfeatures}
+    \technica@loadfont{\setsansfont}{\technica@sansfont}{Source Sans 3}%
+        {\technica@sansfontscale}{\technica@sansfontfeatures}
+    \technica@loadfont{\setmonofont}{\technica@monofont}{Source Code Pro}%
+        {\technica@monofontscale}{\technica@monofontfeatures}
 
-  \IfFontExistsTF{JetBrains Mono}
-    {\setmonofont{JetBrains Mono}[Scale=0.85]}
-    {}
+    % Public heading switch. Bind through \sfdefault so headings track the
+    % active sans family, including a user-provided sansfont.
+    \newcommand{\technicaheadingfamily}{%
+        \fontfamily{\sfdefault}\selectfont
+    }
+
 \fi
 
 \endinput
