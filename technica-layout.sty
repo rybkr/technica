@@ -1,34 +1,189 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-layout}[2026/06/23 Technica document layout]
+\ProvidesPackage{technica-layout}[2026/06/24 Technica document layout]
 
-% This module owns page-level defaults: margins, paragraph spacing, captions,
-% and section typography.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Owns page-level defaults: margins, paragraph spacing, captions, and section
+% typography. All tuneable values are exposed as package options; structural
+% decisions (heading hierarchy, caption style, list rhythm) are house defaults.
+% ------------------------------------------------------------------------------
 
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@layout@}
+
+% ------------------------------------------------------------------------------
+% Package options
+% ------------------------------------------------------------------------------
+% margin:       Passed verbatim to geometry's margin key.
+% headheight:   Passed to geometry's headheight key.
+%
+% parskip:      \parskip value (TeX skip expression).
+% parindent:    \parindent value (dimension).
+% titlespacing: Boolean. False disables all \titlespacing* calls, leaving
+%               titlesec's own defaults (useful when another package owns
+%               vertical rhythm).
+%
+% colorlinks:   Boolean. False suppresses colored hyperlinks (for print).
+% ------------------------------------------------------------------------------
+
+
+\DeclareStringOption[0.5in]{margin}
+\DeclareStringOption[14pt]{headheight}
+
+\DeclareStringOption[6pt plus 2pt minus 1pt]{parskip}
+\DeclareStringOption[0pt]{parindent}
+\DeclareBoolOption[true]{titlespacing}
+
+\DeclareBoolOption[true]{colorlinks}
+
+\ProcessKeyvalOptions*
+
+% Reserved validation hook for future option combinations.
+\iftechnica@layout@colorlinks\else
+    % colorlinks=false is valid alone; no pairing requirement.
+\fi
+
+% ------------------------------------------------------------------------------
+% Page geometry
+% ------------------------------------------------------------------------------
+% Keep geometry ownership local to this module. heightrounded avoids fractional
+% page grids when TeX computes the text block height.
 \RequirePackage{geometry}
-\RequirePackage{caption}
-\RequirePackage{titlesec}
+\geometry{
+    margin=\technica@layout@margin,
+    headheight=\technica@layout@headheight,
+    heightrounded
+}
+\raggedbottom
 
-\geometry{margin=1in}
+% ------------------------------------------------------------------------------
+% Paragraph and vertical spacing
+% ------------------------------------------------------------------------------
+% Paragraph rhythm is intentionally option-driven; footnote spacing is fixed as
+% part of the house layout.
+\setlength{\parindent}{\technica@layout@parindent}
+\setlength{\parskip}{\technica@layout@parskip}
+\setlength{\skip\footins}{14pt plus 4pt minus 2pt}
 
-\captionsetup{
-  labelfont=bf,
-  font=small
+% ------------------------------------------------------------------------------
+% Microtypography and page breaks
+% ------------------------------------------------------------------------------
+% microtype improves line fitting where available. The penalty values strongly
+% discourage isolated first or last lines without making layout impossible.
+\RequirePackage{microtype}
+\emergencystretch=2em
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+
+% ------------------------------------------------------------------------------
+% Hyperlinks
+% ------------------------------------------------------------------------------
+% Deferred to \AtBeginDocument so hyperref can be loaded by the parent package,
+% document class, or user before we configure it. This package intentionally does
+% not load hyperref itself, which avoids option clashes.
+\AtBeginDocument{%
+    \@ifpackageloaded{hyperref}{%
+        \color{TechnicaInk}%
+        \iftechnica@layout@colorlinks
+            \hypersetup{%
+                colorlinks=true,%
+                linkcolor=TechnicaLink,%
+                citecolor=TechnicaLink,%
+                filecolor=TechnicaLink,%
+                urlcolor=TechnicaLink,%
+                pdfborder={0 0 0}%
+            }%
+        \else
+            \hypersetup{%
+                colorlinks=false,%
+                pdfborder={0 0 0}%
+            }%
+        \fi
+    }{%
+        \PackageWarning{technica-layout}{%
+            hyperref not loaded; link colour setup skipped%
+        }%
+    }%
 }
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt}
+% ------------------------------------------------------------------------------
+% Captions
+% ------------------------------------------------------------------------------
+% Captions use muted ink and compact spacing to keep figure/table annotations
+% present without competing with body text.
+\RequirePackage{caption}
+\captionsetup{
+    labelfont={bf,color=TechnicaMutedInk},
+    textfont={small,color=TechnicaMutedInk},
+    margin=10pt,
+    skip=6pt
+}
 
-% Slightly tighter technical-document headings without making a custom class.
+% ------------------------------------------------------------------------------
+% Lists
+% ------------------------------------------------------------------------------
+% Lists inherit the document's paragraph rhythm but keep item spacing compact.
+\RequirePackage{enumitem}
+\setlist{
+    itemsep=2pt plus 1pt,
+    topsep=4pt plus 2pt minus 1pt,
+    parsep=0pt,
+    leftmargin=*
+}
+
+% Better line breaking for long URLs in technical prose.
+\RequirePackage{xurl}
+
+% ------------------------------------------------------------------------------
+% Headings
+% ------------------------------------------------------------------------------
+% \technicaheadingfont is public so other Technica modules can align with the
+% same heading face, weight, and colour.
+\RequirePackage{titlesec}
+
+\newcommand{\technicaheadingfont}{%
+    \normalfont\technicaheadingfamily\bfseries\color{TechnicaInk}%
+}
+
 \titleformat{\section}
-  {\normalfont\Large\bfseries}
-  {\thesection}
-  {0.75em}
-  {}
-
+    {\Large\technicaheadingfont}{\thesection}{0.75em}{}
 \titleformat{\subsection}
-  {\normalfont\large\bfseries}
-  {\thesubsection}
-  {0.75em}
-  {}
+    {\large\technicaheadingfont}{\thesubsection}{0.75em}{}
+\titleformat{\subsubsection}
+    {\normalsize\technicaheadingfont}{\thesubsubsection}{0.75em}{}
+
+\iftechnica@layout@titlespacing
+    \titlespacing*{\section}%
+        {0pt}{18pt plus 6pt minus 2pt}{9pt plus 2pt}
+    \titlespacing*{\subsection}%
+        {0pt}{14pt plus 4pt minus 2pt}{5pt plus 1pt}
+    \titlespacing*{\subsubsection}%
+        {0pt}{10pt plus 3pt minus 1pt}{3pt plus 1pt}
+\fi
+
+% ------------------------------------------------------------------------------
+% Title block
+% ------------------------------------------------------------------------------
+% Keep \maketitle in the same typographic system as section headings while
+% preserving article-class fields: \title, \author, and \date.
+\makeatletter
+\renewcommand{\@maketitle}{%
+    \newpage\null\vskip 2em%
+    \begin{center}%
+        {\normalfont\technicaheadingfamily\bfseries
+         \LARGE\color{TechnicaInk}\@title\par}%
+        \vskip 1.5em%
+        {\normalfont\technicaheadingfamily\large\color{TechnicaInk}%
+         \lineskip .5em%
+         \begin{tabular}[t]{c}\@author\end{tabular}\par}%
+        \vskip 1em%
+        {\normalfont\technicaheadingfamily\large
+         \color{TechnicaMutedInk}\@date}%
+    \end{center}%
+    \par\vskip 1.5em%
+}
+\makeatother
 
 \endinput
