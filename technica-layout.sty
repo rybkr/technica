@@ -91,6 +91,18 @@
 \displaywidowpenalty=10000
 
 % ------------------------------------------------------------------------------
+% Document colors
+% ------------------------------------------------------------------------------
+% Apply the selected theme to the page surface and default text color. This is
+% separate from hyperlink setup so themes work whether or not hyperref is loaded.
+\AtBeginDocument{%
+    \pagecolor{TechnicaPaper}%
+    \color{TechnicaInk}%
+    \let\default@color\current@color
+    \let\XC@default@color\XC@current@color
+}
+
+% ------------------------------------------------------------------------------
 % Hyperlinks
 % ------------------------------------------------------------------------------
 % Deferred to \AtBeginDocument so hyperref can be loaded by the parent package,
@@ -98,7 +110,6 @@
 % not load hyperref itself, which avoids option clashes.
 \AtBeginDocument{%
     \@ifpackageloaded{hyperref}{%
-        \color{TechnicaInk}%
         \iftechnica@layout@colorlinks
             \hypersetup{%
                 colorlinks=true,%

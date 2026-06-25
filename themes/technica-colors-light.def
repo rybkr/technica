@@ -1,0 +1,34 @@
+% Technica light color theme.
+
+% Core tokens.
+\technicadefinecolor{TechnicaPaper}{FFFFFF}
+\technicadefinecolor{TechnicaInk}{1F2328}
+\technicadefinecolor{TechnicaMutedInk}{5B6370}
+\technicadefinecolor{TechnicaRule}{B4B6BE}
+\technicadefinecolor{TechnicaLink}{145091}
+
+% Reading surfaces.
+\technicadefinecolor{TechnicaMist}{F5F7FA}
+\technicadefinecolor{TechnicaGlaze}{FCF6E5}
+\technicaaliascolor{TechnicaCodeBg}{TechnicaMist}
+\technicaaliascolor{TechnicaCodeBorder}{TechnicaRule}
+\technicaaliascolor{TechnicaTerminalBg}{TechnicaGlaze}
+\technicaaliascolor{TechnicaTerminalBorder}{TechnicaRule}
+\technicaaliascolor{TechnicaInlineBg}{TechnicaMist}
+\technicaaliascolor{TechnicaInlineBorder}{TechnicaRule}
+
+% Callout colors.
+\technicadefinecolor{TechnicaNote}{235096}
+\technicadefinecolor{TechnicaExplanation}{41788C}
+\technicadefinecolor{TechnicaAdvice}{BE5C2D}
+\technicadefinecolor{TechnicaWarning}{BE372D}
+
+% Syntax colors.
+\technicadefinecolor{TechnicaKeyword}{74459C}
+\technicadefinecolor{TechnicaType}{BE6019}
+\technicadefinecolor{TechnicaOperator}{145091}
+\technicadefinecolor{TechnicaLiteral}{B9412D}
+\technicadefinecolor{TechnicaString}{237D4B}
+\technicadefinecolor{TechnicaComment}{41788C}
+\technicadefinecolor{TechnicaPrompt}{876937}
+\technicadefinecolor{TechnicaCommand}{197D50}

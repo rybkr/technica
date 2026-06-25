@@ -1,36 +1,67 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{technica-colors}[2026/06/23 Technica color palette]
 
-% This module owns the named color palette.
+% ------------------------------------------------------------------------------
+% Purpose
+% ------------------------------------------------------------------------------
+% Defines the Technica named color palette and a lightweight alias system.
+% Raw colors own a hex value; semantic tokens alias into raw colors so that
+% redefining a raw color propagates to all aliases automatically.
 %
-% Notes:
-% - Prefer changing color definitions here instead of editing individual boxes
-%   and code styles in order to maintain consistency.
+% Public interface:
+%   \technicadefinecolor{<name>}{<RRGGBB>}
+%     Defines a raw color and a \<name>Hex macro for the hex string.
+%     If called after package load, replays all alias bindings.
+%
+%   \technicaaliascolor{<name>}{<target>}
+%     Binds <name> to <target> via \colorlet and registers the binding
+%     for replay when <target> is later redefined.
+% ------------------------------------------------------------------------------
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=technica, prefix=technica@colors@}
+
+\DeclareStringOption[light]{theme}
+
+\ProcessKeyvalOptions*
 
 \RequirePackage[table,dvipsnames,svgnames,x11names]{xcolor}
 
-% Neutral surfaces.
-\definecolor{TechnicaPaper}{RGB}{255,255,255}
-\definecolor{TechnicaInk}{RGB}{31,35,40}
-\definecolor{TechnicaMutedInk}{RGB}{91,99,112}
-\definecolor{TechnicaCodeBg}{RGB}{245,247,250}
-\definecolor{TechnicaCodeBorder}{RGB}{180,182,190}
-\definecolor{TechnicaTerminalBg}{RGB}{252,246,229}
+\makeatletter
 
-% Callout colors.
-\definecolor{TechnicaNote}{RGB}{35,80,150}
-\definecolor{TechnicaExplanation}{RGB}{65,120,140}
-\definecolor{TechnicaAdvice}{RGB}{190,92,45}
-\definecolor{TechnicaWarning}{RGB}{190,55,45}
+% false during initial load; true after
+\newif\iftechnica@colors@loaded
 
-% Syntax colors. These are intentionally conservative for print and projection.
-\definecolor{TechnicaKeyword}{RGB}{116,69,156}
-\definecolor{TechnicaType}{RGB}{190,96,25}
-\definecolor{TechnicaOperator}{RGB}{20,80,145}
-\definecolor{TechnicaLiteral}{RGB}{185,65,45}
-\definecolor{TechnicaString}{RGB}{35,125,75}
-\definecolor{TechnicaComment}{RGB}{65,120,140}
-\definecolor{TechnicaPrompt}{RGB}{135,105,55}
-\definecolor{TechnicaCommand}{RGB}{25,125,80}
+% accumulates \technica@refreshalias calls
+\newcommand{\technica@aliases}{}
+
+\newcommand{\technica@refreshalias}[2]{%
+    \colorlet{#1}{#2}%
+    \expandafter\edef\csname #1Hex\endcsname{\csname #2Hex\endcsname}%
+}
+
+\newcommand{\technicadefinecolor}[2]{%
+    \definecolor{#1}{HTML}{#2}%
+    \expandafter\def\csname #1Hex\endcsname{#2}%
+    \iftechnica@colors@loaded\technica@aliases\fi
+}
+
+\newcommand{\technicaaliascolor}[2]{%
+    \technica@refreshalias{#1}{#2}%
+    \g@addto@macro\technica@aliases{\technica@refreshalias{#1}{#2}}%
+}
+
+\InputIfFileExists{themes/technica-colors-\technica@colors@theme.def}{}{%
+    \PackageError{technica-colors}{%
+        Theme `\technica@colors@theme' not found%
+    }{%
+        No file themes/technica-colors-\technica@colors@theme.def on the TeX path.%
+        Shipping themes: light, dark.%
+    }%
+}
+
+\AtEndOfPackage{\technica@colors@loadedtrue}
+
+\makeatother
 
 \endinput
