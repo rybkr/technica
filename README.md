@@ -213,7 +213,7 @@ Some colors can alias others, so related surfaces stay together:
 ```
 
 Use `\technicadefinecolor` instead of raw `\definecolor` for Technica colors so
-demo swatches and color aliases keep their recorded hex values in sync.
+color aliases keep their recorded hex values in sync.
 
 ## Development Usage
 
@@ -221,10 +221,4 @@ From a consuming repository, point `TEXINPUTS` at this checkout:
 
 ```sh
 TEXINPUTS=/path/to/technica//: xelatex chapters/example/example.tex
-```
-
-Build the local demo PDF with:
-
-```sh
-make demo.pdf
 ```
