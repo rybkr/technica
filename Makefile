@@ -11,7 +11,7 @@ SRC := technica.sty \
        technica-boxes.sty \
        technica-macros.sty \
        macros/prose.def \
-       languages/cxx.def \
+       languages/cpp.def \
        languages/sh.def \
        themes/technica-colors-light.def \
        themes/technica-colors-dark.def

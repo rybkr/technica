@@ -1,6 +1,6 @@
 % Technica C++ listings language.
 
-\lstdefinestyle{technica-cxx}{
+\lstdefinestyle{technica-cpp}{
     style=technica-base,
     language=C++,
     commentstyle=\color{TechnicaComment}\itshape,
@@ -26,7 +26,7 @@
     keywordstyle=[8]\color{TechnicaOperator}
 }
 
-\technicadefinecodeblock{cxx}{technica-cxx}
-\technicadefineinlinecode{inlinecxx}{technica-cxx}
+\technicadefinecodeblock{cpp}{technica-cpp}
+\technicadefineinlinecode{inlinecpp}{technica-cpp}
 
 \endinput

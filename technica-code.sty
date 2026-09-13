@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/06/25 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/09/13 Technica code and terminal styles]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -10,7 +10,7 @@
 %
 % Public API:
 %   \technicaloadcodelanguage{<name>}
-%     Loads languages/<name>.def once. Shipping languages: cxx, sh.
+%     Loads languages/<name>.def once. Shipping languages: cpp, sh.
 %
 %   \technicadefinecodeblock{<environment>}{<listings-style>}
 %     Defines a titled tcolorbox/listings environment taking one title argument.
@@ -19,11 +19,11 @@
 %     Defines an inline code command backed by a listings style.
 %
 %   \inlinecode{...}     generic inline code
-%   \inlinecxx{...}      inline C++ (from languages/cxx.def)
+%   \inlinecpp{...}      inline C++ (from languages/cpp.def)
 %   \inlinesh{...}       inline shell/terminal text (from languages/sh.def)
 %
 %   \begin{codeblock}{Title} ... \end{codeblock}
-%   \begin{cxx}{main.cpp} ... \end{cxx}      (from languages/cxx.def)
+%   \begin{cpp}{main.cpp} ... \end{cpp}      (from languages/cpp.def)
 %   \begin{terminal} ... \end{terminal}      (from languages/sh.def)
 % ------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@
 %              Vertical skips around code boxes.
 % ------------------------------------------------------------------------------
 
-\DeclareStringOption[cxx,sh]{languages}
+\DeclareStringOption[cpp,sh]{languages}
 \DeclareStringOption[3pt]{arc}
 \DeclareStringOption[0.6pt]{boxrule}
 \DeclareStringOption[8pt]{left}

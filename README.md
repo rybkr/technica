@@ -34,7 +34,7 @@ Code blocks are enabled by default. Disable them with `code=false`, or choose
 which language definitions to load through `codeopts`:
 
 ```latex
-\usepackage[codeopts={languages={cxx,sh}}]{technica}
+\usepackage[codeopts={languages={cpp,sh}}]{technica}
 ```
 
 Semantic prose macros are enabled by default. Disable them with `macros=false`,
@@ -87,11 +87,11 @@ brief fragments and the block environments for anything multi-line.
 | Command | Use for | Example |
 | --- | --- | --- |
 | `\inlinecode{...}` | Generic inline code | `\inlinecode{return value;}` |
-| `\inlinecxx{...}` | Inline C++ | `\inlinecxx{std::vector<int>}` |
+| `\inlinecpp{...}` | Inline C++ | `\inlinecpp{std::vector<int>}` |
 | `\inlinesh{...}` | Inline shell text | `\inlinesh{clang++ main.cpp}` |
 
 ```latex
-Call \inlinecxx{std::vector<int>::push_back} from the loop.
+Call \inlinecpp{std::vector<int>::push_back} from the loop.
 Run \inlinesh{clang++ main.cpp} to build the example.
 ```
 
@@ -107,16 +107,16 @@ name = technica
 \end{codeblock}
 ```
 
-#### `cxx`
+#### `cpp`
 
 C++ code block with a title, usually a filename.
 
 ```latex
-\begin{cxx}{main.cpp}
+\begin{cpp}{main.cpp}
 int main() {
     return 0;
 }
-\end{cxx}
+\end{cpp}
 ```
 
 #### `terminal`
@@ -135,10 +135,10 @@ with `\technicaloadcodelanguage`, then use the environments or inline commands
 that definition provides:
 
 ```latex
-\technicaloadcodelanguage{cxx}
-\begin{cxx}{main.cpp}
+\technicaloadcodelanguage{cpp}
+\begin{cpp}{main.cpp}
 int main() { return 0; }
-\end{cxx}
+\end{cpp}
 ```
 
 New language files should define a listings style, then expose semantic wrappers
