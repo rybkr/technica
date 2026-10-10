@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/09/13 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/10/10 Technica code and terminal styles]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -13,10 +13,14 @@
 %     Loads languages/<name>.def once. Shipping languages: cpp, sh.
 %
 %   \technicadefinecodeblock{<environment>}{<listings-style>}
-%     Defines a titled tcolorbox/listings environment taking one title argument.
+%     Defines an environment taking [box options]{title}. The listingopts key
+%     adds listings options to the language style; label enables references.
+%
+%   \technicainputcode[<box options>]{<title>}{<path>}
+%     Includes a source file; select its language with listingopts={style=...}.
 %
 %   \technicadefineinlinecode{<command>}{<listings-style>}
-%     Defines an inline code command backed by a listings style.
+%     Defines a verbatim inline command accepting {text} or !text! delimiters.
 %
 %   \inlinecode{...}     generic inline code
 %   \inlinecpp{...}      inline C++ (from languages/cpp.def)
@@ -85,6 +89,9 @@
 }
 
 \tcbset{
+    % Apply local listings settings on top of the selected language style.
+    technica listing style/.store in=\technica@code@style,
+    listingopts/.code={\pgfkeysalso{listing options={style=\technica@code@style,#1}}},
     technica-codebox/.style={
         enhanced,
         breakable,
@@ -112,27 +119,40 @@
     }
 }
 
-\newtcblisting{codeblock}[1]{
-    listing engine=listings,
-    listing only,
-    listing options={style=technica-base},
-    technica-codebox,
-    title={#1},
-}
+% A shared counter makes labels useful across all code-block environments.
+\newcounter{technicacode}
 
 \newcommand{\technicadefinecodeblock}[2]{%
-    \newtcblisting{#1}[1]{%
+    \newtcblisting[use counter=technicacode]{#1}[2][]{%
         listing engine=listings,
         listing only,
-        listing options={style=#2},
+        technica listing style=#2,
+        listingopts={},
         technica-codebox,
-        title={##1},
+        title={##2},
+        ##1%
     }%
 }
 
+\technicadefinecodeblock{codeblock}{technica-base}
+
+% Read snippets directly from source files. Relative paths are resolved by TeX.
+\newtcbinputlisting[use counter=technicacode]{\technicainputcode}[3][]{%
+    listing engine=listings,
+    listing only,
+    technica listing style=technica-base,
+    listingopts={},
+    technica-codebox,
+    title={#2},
+    listing file={#3},
+    #1%
+}
+
 \newcommand{\technicadefineinlinecode}[2]{%
-    \expandafter\newcommand\csname #1\endcsname[1]{%
-        \lstinline[style=#2,escapechar=|]|##1|%
+    % Do not capture the snippet: listings must set catcodes before reading it.
+    % Accepts both {simple text} and caller-chosen delimiters, e.g. !a || b!.
+    \expandafter\newcommand\csname #1\endcsname{%
+        \lstinline[style=#2]%
     }%
 }
 
@@ -149,7 +169,7 @@
 }
 
 % Inline generic code intentionally remains language-neutral.
-\newcommand{\inlinecode}[1]{\lstinline[style=technica-base]|#1|}
+\technicadefineinlinecode{inlinecode}{technica-base}
 
 \ifx\technica@code@languages\@empty\else
     \@for\technica@code@language:=\technica@code@languages\do{%

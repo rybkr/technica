@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{technica}
+\usepackage{hyperref}
+\technicadefinecodeblock{customcode}{technica-base}
+\begin{document}
+\begin{cpp}[listingopts={numbers=left,firstnumber=20},label=code:first]{Numbered}
+int first = 20;
+int second = 21;
+\end{cpp}
+\begin{cpp}[listingopts={numbers=none}]{Unnumbered}
+int plain = 0;
+\end{cpp}
+\begin{codeblock}{Existing syntax}
+legacy = works
+\end{codeblock}
+\begin{customcode}[listingopts={numbers=left,firstnumber=30}]{Custom factory}
+custom = works
+\end{customcode}
+\begin{terminal}[title={Build session},listingopts={numbers=left,firstnumber=35}]
+$ cat input | sort
+\end{terminal}
+\technicainputcode[listingopts={style=technica-cpp,firstline=2,lastline=3,firstnumber=40},label=code:source]{Source file}{tests/sample.cpp}
+First block: \ref{code:first}. Source block: \ref{code:source}.
+\end{document}

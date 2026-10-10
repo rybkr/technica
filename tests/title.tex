@@ -1,0 +1,16 @@
+\documentclass{article}
+\makeatletter
+\def\@maketitle{Custom title retained.}
+\let\savedtitle\@maketitle
+\makeatother
+\usepackage[layoutopts={title=false}]{technica}
+\makeatletter
+\ifx\savedtitle\@maketitle\else
+  \errmessage{Technica replaced the custom title}
+\fi
+\makeatother
+\begin{document}
+\maketitle
+\section{Still styled}
+Title opt-out keeps the rest of the layout.
+\end{document}

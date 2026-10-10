@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-layout}[2026/06/24 Technica document layout]
+\ProvidesPackage{technica-layout}[2026/10/10 Technica document layout]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -28,6 +28,7 @@
 %               vertical rhythm).
 %
 % colorlinks:   Boolean. False suppresses colored hyperlinks (for print).
+% title:        Boolean. Style the article title block; false preserves it.
 % ------------------------------------------------------------------------------
 
 
@@ -42,6 +43,7 @@
 \DeclareBoolOption[true]{titlespacing}
 
 \DeclareBoolOption[true]{colorlinks}
+\DeclareBoolOption[true]{title}
 
 \ProcessKeyvalOptions*
 
@@ -167,6 +169,8 @@
 % same heading face, weight, and colour.
 \RequirePackage{titlesec}
 
+\providecommand{\technicaheadingfamily}{\sffamily}
+
 \newcommand{\technicaheadingfont}{%
     \normalfont\technicaheadingfamily\bfseries\color{TechnicaInk}%
 }
@@ -193,6 +197,8 @@
 % Keep \maketitle in the same typographic system as section headings while
 % preserving article-class fields: \title, \author, and \date.
 \makeatletter
+\iftechnica@layout@title
+\@ifclassloaded{article}{%
 \renewcommand{\@maketitle}{%
     \newpage\null\vskip 2em%
     \begin{center}%
@@ -208,6 +214,13 @@
     \end{center}%
     \par\vskip 1.5em%
 }
+}{%
+    \PackageWarning{technica-layout}{%
+        Title styling supports article only; retaining the class title.%
+        \MessageBreak Use title=false to suppress this warning%
+    }%
+}
+\fi
 \makeatother
 
 \endinput

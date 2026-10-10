@@ -1,4 +1,8 @@
-.PHONY: install-hooks bundle
+.PHONY: install-hooks bundle test specimen
+
+PYTHON ?= python3
+ENGINES ?= pdflatex xelatex lualatex
+SPECIMEN_ENGINE ?= xelatex
 
 TEXMFLOCAL ?= $(shell kpsewhich -var-value TEXMFLOCAL 2>/dev/null || printf '%s\n' /usr/local/texlive/texmf-local)
 INSTALL_DIR := $(TEXMFLOCAL)/tex/latex/technica
@@ -18,6 +22,12 @@ SRC := technica.sty \
 
 install-hooks:
 	git config core.hooksPath .githooks
+
+test:
+	$(PYTHON) scripts/test.py $(ENGINES)
+
+specimen:
+	$(PYTHON) scripts/test.py --specimen $(SPECIMEN_ENGINE)
 
 bundle:
 	@set -e; \

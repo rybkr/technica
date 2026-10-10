@@ -14,10 +14,11 @@
     stringstyle=\color{TechnicaCommand}
 }
 
-\newtcblisting{terminal}{
+\newtcblisting[use counter=technicacode]{terminal}[1][]{
     listing engine=listings,
     listing only,
-    listing options={style=technica-terminal},
+    technica listing style=technica-terminal,
+    listingopts={},
     colback=TechnicaTerminalBg,
     colframe=TechnicaTerminalBorder,
     coltitle=TechnicaInk,
@@ -41,7 +42,8 @@
     top=\technica@code@top,
     bottom=\technica@code@bottom,
     before skip=\technica@code@beforeskip,
-    after skip=\technica@code@afterskip
+    after skip=\technica@code@afterskip,
+    #1
 }
 
 \technicadefineinlinecode{inlinesh}{technica-terminal}

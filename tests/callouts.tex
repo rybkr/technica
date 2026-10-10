@@ -1,0 +1,21 @@
+\documentclass{article}
+\usepackage[theme=dark]{technica}
+\technicadefinecallout{customnote}{Custom}{TechnicaNote}
+\makeatletter
+\newcommand{\checkcalloutink}{%
+  \begingroup
+  \let\actualink\current@color
+  \color{TechnicaInk}%
+  \ifx\actualink\current@color\else
+    \errmessage{Callout body does not use the theme ink color}%
+  \fi
+  \endgroup
+}
+\makeatother
+\begin{document}
+\begin{note}\checkcalloutink Readable note.\end{note}
+\begin{explanation}\checkcalloutink Readable explanation.\end{explanation}
+\begin{advice}\checkcalloutink Readable advice.\end{advice}
+\begin{warning}\checkcalloutink Readable warning.\end{warning}
+\begin{customnote}\checkcalloutink Readable custom callout.\end{customnote}
+\end{document}
