@@ -1,8 +1,7 @@
-.PHONY: install-hooks bundle test specimen
+.PHONY: install-hooks bundle test
 
 PYTHON ?= python3
 ENGINES ?= pdflatex xelatex lualatex
-SPECIMEN_ENGINE ?= xelatex
 
 TEXMFLOCAL ?= $(shell kpsewhich -var-value TEXMFLOCAL 2>/dev/null || printf '%s\n' /usr/local/texlive/texmf-local)
 INSTALL_DIR := $(TEXMFLOCAL)/tex/latex/technica
@@ -25,9 +24,6 @@ install-hooks:
 
 test:
 	$(PYTHON) scripts/test.py $(ENGINES)
-
-specimen:
-	$(PYTHON) scripts/test.py --specimen $(SPECIMEN_ENGINE)
 
 bundle:
 	@set -e; \

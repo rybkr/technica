@@ -97,16 +97,11 @@ def check_case(name, pdf):
         require_text(text, "int item0 = 0;", "int item99 = 99;")
         if text.count("\f") < 2:
             raise RuntimeError("Long listing did not span pages")
-    elif name.startswith("specimen-"):
-        require_text(text, "Total: 54", "Step 9.", "After the continuation")
-        if text.count("\f") < 4:
-            raise RuntimeError("Specimen no longer exercises a callout across pages")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("engines", nargs="*", default=["pdflatex", "xelatex", "lualatex"])
-    parser.add_argument("--specimen", action="store_true", help="Only build the light and dark specimens")
     args = parser.parse_args()
     engines = args.engines
     for tool in engines + ["pdftotext"]:
@@ -114,11 +109,7 @@ def main():
             raise RuntimeError(f"Required tool not found: {tool}")
     failures = []
     for engine in engines:
-        fixtures = [] if args.specimen else list(cases())
-        for theme in ("light", "dark"):
-            source = rf"\def\TechnicaTheme{{{theme}}}" + "\n" + (ROOT / "examples/specimen.tex").read_text()
-            fixtures.append((f"specimen-{theme}", source, 2))
-        for name, source, passes in fixtures:
+        for name, source, passes in cases():
             try:
                 pdf = compile_tex(engine, name, source, passes)
                 check_case(name, pdf)

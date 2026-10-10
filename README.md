@@ -396,28 +396,20 @@ system write permission. To install in your personal TeX tree instead:
 make bundle TEXMFLOCAL="$(kpsewhich -var-value TEXMFHOME)"
 ```
 
-### Checks and visual specimen
+### Checks
 
 ```sh
 make test                         # pdfLaTeX, XeLaTeX, and LuaLaTeX
 make test ENGINES=pdflatex         # one engine
-make specimen                     # light + dark, using XeLaTeX
-make specimen SPECIMEN_ENGINE=lualatex
 ```
 
-These targets require Python 3 and Poppler's `pdftotext`, plus the selected TeX
-engines. Outputs and logs go into `build/tests/<engine>/<case>/`. The specimen
-PDFs are `specimen-light/specimen-light.pdf` and
-`specimen-dark/specimen-dark.pdf` within the engine directory.
+The tests require Python 3 and Poppler's `pdftotext`, plus the selected TeX
+engines. Outputs and logs go into `build/tests/<engine>/<case>/`.
 
 The checks compile actual documents and inspect PDF text for literal characters,
 line numbers, selected source lines, and resolved references. They also exercise
 module switches, retained title blocks, dark-theme callout text, basic class
-compatibility, and code spanning pages. Both themes are compiled and overfull
-boxes fail the checks.
-Inspect the specimen PDFs when changing typography or spacing; compilation alone
-cannot establish visual quality. Sources live in `examples/specimen.tex` and
-`examples/sample.cpp`.
+compatibility, and code spanning pages. Overfull boxes fail the checks.
 
 Run `make install-hooks` to enable the pre-commit check requiring today's
 `\ProvidesPackage` date in staged `.sty` files.
