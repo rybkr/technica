@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{technica}
+\newcommand{\assertcolor}[2]{%
+  \begingroup
+  \convertcolorspec{named}{#1}{HTML}\actualcolor
+  \edef\expectedcolor{#2}%
+  \edef\recordedcolor{\csname #1Hex\endcsname}%
+  \ifx\actualcolor\expectedcolor\else
+    \errmessage{Wrong color for #1: \actualcolor, expected #2}%
+  \fi
+  \ifx\recordedcolor\expectedcolor\else
+    \errmessage{Hex value disagrees with color #1}%
+  \fi
+  \endgroup
+}
+\technicadefinecolor{TechnicaCodeBg}{FF0000}
+\assertcolor{TechnicaCodeBg}{FF0000}
+\technicadefinecolor{TechnicaMist}{112233}
+\assertcolor{TechnicaCodeBg}{FF0000}
+\assertcolor{TechnicaInlineBg}{112233}
+
+\technicaaliascolor{Dependent}{TechnicaCodeBg}
+\technicaaliascolor{Leaf}{Dependent}
+\technicaaliascolor{TechnicaCodeBg}{TechnicaGlaze}
+\assertcolor{Dependent}{FCF6E5}
+\assertcolor{Leaf}{FCF6E5}
+\technicadefinecolor{TechnicaGlaze}{445566}
+\assertcolor{TechnicaCodeBg}{445566}
+\assertcolor{Dependent}{445566}
+\assertcolor{Leaf}{445566}
+
+\begingroup
+\technicadefinecolor{Dependent}{778899}
+\assertcolor{Leaf}{778899}
+\endgroup
+\assertcolor{Dependent}{445566}
+\assertcolor{Leaf}{445566}
+\technicadefinecolor{TechnicaGlaze}{AABBCC}
+\assertcolor{Leaf}{AABBCC}
+
+% Reject cycles without disturbing the existing bindings or values.
+\newcommand{\assertaliascycle}[2]{%
+  \begingroup
+  \def\goterror{no}%
+  \def\PackageError##1##2##3{\def\goterror{yes}}%
+  \technicaaliascolor{#1}{#2}%
+  \def\expectederror{yes}%
+  \ifx\goterror\expectederror\else\errmessage{Alias cycle accepted}\fi
+  \assertcolor{Leaf}{AABBCC}%
+  \endgroup
+}
+\assertaliascycle{Dependent}{Dependent}
+\assertaliascycle{TechnicaGlaze}{Leaf}
+\technicadefinecolor{TechnicaGlaze}{123456}
+\assertcolor{Leaf}{123456}
+\technicaaliascolor{ExternalRed}{red}
+\assertcolor{ExternalRed}{FF0000}
+\begin{document}
+Palette overrides and alias propagation work.
+\end{document}

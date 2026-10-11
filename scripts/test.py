@@ -51,7 +51,9 @@ def document(options, body="Module switches work.", document_class="article"):
 
 
 def cases():
-    for name in ("inline", "layout", "blocks", "title", "callouts"):
+    for name in ("inline", "layout", "blocks", "title", "callouts",
+                 "prose-literals", "definition-loading", "definition-lists",
+                 "preloaded-boxes", "late-fonts", "colors", "cpp-keywords"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
     features = ("fonts", "layout", "code", "boxes", "macros")
     bodies = {
@@ -79,6 +81,13 @@ def check_case(name, pdf):
                      "100% literal #1 $HOME file_name & value",
                      "if (a || b) { return a | b; }", r'''printf '%s\n' "$HOME" | sort''',
                      r"C:\tmp\file_name", "unmatched } and { braces")
+    elif name == "prose-literals":
+        require_text(text, "clang++ --version", r"C:\Users\ryan\file.txt",
+                     "my--file.txt", "operator--",
+                     "100% literal #1 $HOME file_name & value",
+                     r'''printf '%s\n' "$HOME" | sort''', "if (ready) { run(); }")
+    elif name == "definition-loading":
+        require_text(text, "first", "second", "Second term", "$ make")
     elif name == "blocks":
         # Check numbering, source slicing, factory options, and resolved labels.
         for number, code in ((20, "int first = 20;"), (21, "int second = 21;"),

@@ -8,6 +8,7 @@ INSTALL_DIR := $(TEXMFLOCAL)/tex/latex/technica
 
 SRC := technica.sty \
        technica-colors.sty \
+       technica-definitions.sty \
        technica-fonts.sty \
        technica-layout.sty \
        technica-code.sty \

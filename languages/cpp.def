@@ -10,7 +10,7 @@
     numberstyle=\color{TechnicaMutedInk}\footnotesize\ttfamily,
     deletekeywords={auto,bool,break,case,catch,char,class,const,continue,default,delete,do,double,else,enum,explicit,extern,false,float,for,friend,goto,if,inline,int,long,namespace,new,operator,private,protected,public,register,return,short,signed,sizeof,static,struct,switch,template,this,throw,true,try,typedef,typename,union,unsigned,using,virtual,void,volatile,while},
     keywords=[2]{auto,bool,char,double,float,int,long,short,signed,unsigned,void},
-    keywords=[3]{asm,catch,class,concept,const,consteval,constexpr,constinit,continue,decltype,default,do,enum,explicit,extern,for,friend,goto,inline,mutable,namespace,noexcept,override,private,protected,public,register,requires,return,static,struct,template,try,throw,typedef,typeid,typename,union,using,virtual,volatile,while},
+    keywords=[3]{asm,break,catch,class,concept,const,consteval,constexpr,constinit,continue,decltype,default,do,enum,explicit,extern,for,friend,goto,inline,mutable,namespace,noexcept,override,private,protected,public,register,requires,return,static,struct,template,try,throw,typedef,typeid,typename,union,using,virtual,volatile,while},
     keywords=[4]{if,case,else,switch},
     keywords=[5]{and,and_eq,bitor,bitand,compl,delete,or,or_eq,new,not,not_eq,sizeof,xor,xor_eq},
     keywords=[6]{NULL,false,nullptr,true},

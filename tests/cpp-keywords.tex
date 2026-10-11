@@ -1,0 +1,12 @@
+\documentclass{article}
+\usepackage{technica}
+\newcounter{keywordhits}
+\begin{document}
+% The style hook must run for each keyword, including break.
+\begin{cpp}[listingopts={keywordstyle={[3]\stepcounter{keywordhits}}}]{Keywords}
+break; continue; return;
+\end{cpp}
+\ifnum\value{keywordhits}=3\else
+  \errmessage{Expected three C++ keywords, got \arabic{keywordhits}}
+\fi
+\end{document}

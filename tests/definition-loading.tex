@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage[codeopts={languages={}},macroopts={sets={}}]{technica}
+\begin{document}
+\begingroup
+\technicaloadcodelanguage{ cpp }
+\technicaloadmacroset{ prose }
+\inlinecpp{first} \term{First term}
+\endgroup
+\technicaloadcodelanguage{ cpp }
+\technicaloadcodelanguage{cpp}
+\technicaloadmacroset{ prose }
+\technicaloadmacroset{prose}
+\inlinecpp{second} \term{Second term}
+\technicaloadcodelanguage{sh}
+\ifnum\catcode64=12\else\errmessage{Loader changed the at-sign catcode}\fi
+\begin{terminal}
+$ make
+\end{terminal}
+\end{document}

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-colors}[2026/06/23 Technica color palette]
+\ProvidesPackage{technica-colors}[2026/10/11 Technica color palette]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -11,11 +11,11 @@
 % Public interface:
 %   \technicadefinecolor{<name>}{<RRGGBB>}
 %     Defines a raw color and a \<name>Hex macro for the hex string.
-%     If called after package load, replays all alias bindings.
+%     Replaces any alias of the same name and refreshes dependent aliases.
 %
 %   \technicaaliascolor{<name>}{<target>}
-%     Binds <name> to <target> via \colorlet and registers the binding
-%     for replay when <target> is later redefined.
+%     Binds <name> to a named <target> via \colorlet, replacing its old binding.
+%     Refreshes dependents immediately. Cycles are rejected.
 % ------------------------------------------------------------------------------
 
 \RequirePackage{kvoptions}
@@ -26,30 +26,80 @@
 \ProcessKeyvalOptions*
 
 \RequirePackage[table,dvipsnames,svgnames,x11names]{xcolor}
+\RequirePackage{expl3}
 
-\makeatletter
+\ExplSyntaxOn
 
-% false during initial load; true after
-\newif\iftechnica@colors@loaded
+% Bindings have the same scope as xcolor definitions. Store only the current
+% target, rather than a history whose replay could undo later overrides.
+\prop_new:N \l__technica_color_aliases_prop
+\tl_new:N \l__technica_color_target_tl
+\tl_new:N \l__technica_color_hex_tl
+\bool_new:N \l__technica_color_cycle_bool
 
-% accumulates \technica@refreshalias calls
-\newcommand{\technica@aliases}{}
+\cs_new_protected:Npn \__technica_refresh_color:n #1
+  {
+    \prop_get:NnNT \l__technica_color_aliases_prop {#1}
+      \l__technica_color_target_tl
+      {
+        \exp_args:NnV \__technica_refresh_alias:nn {#1}
+          \l__technica_color_target_tl
+      }
+  }
 
-\newcommand{\technica@refreshalias}[2]{%
-    \colorlet{#1}{#2}%
-    \expandafter\edef\csname #1Hex\endcsname{\csname #2Hex\endcsname}%
-}
+\cs_new_protected:Npn \__technica_refresh_alias:nn #1#2
+  {
+    % Resolve the upstream color first, irrespective of insertion order.
+    \__technica_refresh_color:n {#2}
+    \colorlet{#1}{#2}
+    \convertcolorspec{named}{#2}{HTML}\l__technica_color_hex_tl
+    \cs_set:cpx {#1Hex} {\l__technica_color_hex_tl}
+  }
 
-\newcommand{\technicadefinecolor}[2]{%
-    \definecolor{#1}{HTML}{#2}%
-    \expandafter\def\csname #1Hex\endcsname{#2}%
-    \iftechnica@colors@loaded\technica@aliases\fi
-}
+\cs_new_protected:Npn \__technica_refresh_colors:
+  {
+    \prop_map_inline:Nn \l__technica_color_aliases_prop
+      {\__technica_refresh_alias:nn {##1} {##2}}
+  }
 
-\newcommand{\technicaaliascolor}[2]{%
-    \technica@refreshalias{#1}{#2}%
-    \g@addto@macro\technica@aliases{\technica@refreshalias{#1}{#2}}%
-}
+\cs_new_protected:Npn \__technica_check_color_cycle:nn #1#2
+  {
+    \str_if_eq:nnTF {#1} {#2}
+      {\bool_set_true:N \l__technica_color_cycle_bool}
+      {
+        \prop_get:NnNT \l__technica_color_aliases_prop {#2}
+          \l__technica_color_target_tl
+          {
+            \exp_args:NnV \__technica_check_color_cycle:nn {#1}
+              \l__technica_color_target_tl
+          }
+      }
+  }
+
+\cs_new_protected:Npn \technicadefinecolor #1#2
+  {
+    \definecolor{#1}{HTML}{#2}
+    \cs_set:cpn {#1Hex} {#2}
+    \prop_remove:Nn \l__technica_color_aliases_prop {#1}
+    \__technica_refresh_colors:
+  }
+
+\cs_new_protected:Npn \technicaaliascolor #1#2
+  {
+    \bool_set_false:N \l__technica_color_cycle_bool
+    \__technica_check_color_cycle:nn {#1} {#2}
+    \bool_if:NTF \l__technica_color_cycle_bool
+      {
+        \PackageError{technica-colors}{Color~alias~cycle~for~`#1'}
+          {An~alias~cannot~refer~to~itself,~directly~or~indirectly.}
+      }
+      {
+        \prop_put:Nnn \l__technica_color_aliases_prop {#1} {#2}
+        \__technica_refresh_colors:
+      }
+  }
+
+\ExplSyntaxOff
 
 \InputIfFileExists{themes/technica-colors-\technica@colors@theme.def}{}{%
     \PackageError{technica-colors}{%
@@ -59,9 +109,5 @@
         Shipping themes: light, dark.%
     }%
 }
-
-\AtEndOfPackage{\technica@colors@loadedtrue}
-
-\makeatother
 
 \endinput

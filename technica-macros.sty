@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-macros}[2026/06/25 Technica semantic prose macros]
+\ProvidesPackage{technica-macros}[2026/10/11 Technica semantic prose macros]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -48,13 +48,29 @@
 \ProcessKeyvalOptions*
 
 \RequirePackage{technica-colors}
+\RequirePackage{technica-definitions}
+\RequirePackage{listings}
+\RequirePackage{textcomp}
 
 \makeatletter
 
-\newcommand{\technicainline}[1]{%
-    \begingroup
-    \texttt{\detokenize{#1}}%
-    \endgroup
+% Let listings read literal text before TeX tokenizes backslashes or percent
+% signs. Unlike code snippets, prose labels inherit the surrounding font size.
+\lstdefinestyle{technica-prose}{
+    language={},
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    showspaces=false,
+    showtabs=false,
+    showstringspaces=false,
+    breakatwhitespace=true,
+    breaklines=true
+}
+
+\newcommand{\technicainline}{%
+    \lstinline[style=technica-prose]%
 }
 
 \newcommand{\technicakeylabel}[1]{%
@@ -78,8 +94,8 @@
 }
 
 \newcommand{\technicadefineinlinemacro}[1]{%
-    \expandafter\newcommand\csname #1\endcsname[1]{%
-        \technicainline{##1}%
+    \expandafter\newcommand\csname #1\endcsname{%
+        \technicainline%
     }%
 }
 
@@ -90,15 +106,7 @@
 }
 
 \newcommand{\technicaloadmacroset}[1]{%
-    \@ifundefined{technica@macros@set@#1@loaded}{%
-        \InputIfFileExists{macros/#1.def}{%
-            \expandafter\gdef\csname technica@macros@set@#1@loaded\endcsname{1}%
-        }{%
-            \PackageError{technica-macros}{Macro set `#1' not found}{%
-                No file macros/#1.def was found on the TeX path.%
-            }%
-        }%
-    }{}%
+    \technica@loaddefinition{technica-macros}{macros}{#1}%
 }
 
 \ifx\technica@macros@sets\@empty\else

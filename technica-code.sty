@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/10/10 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/10/11 Technica code and terminal styles]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -63,9 +63,10 @@
 \ProcessKeyvalOptions*
 
 \RequirePackage{technica-colors}
+\RequirePackage{technica-definitions}
 \RequirePackage{listings}
 \RequirePackage{textcomp}
-\RequirePackage[many]{tcolorbox}
+\RequirePackage{tcolorbox}
 
 \tcbuselibrary{listings,breakable,skins}
 
@@ -157,15 +158,7 @@
 }
 
 \newcommand{\technicaloadcodelanguage}[1]{%
-    \@ifundefined{technica@code@language@#1@loaded}{%
-        \InputIfFileExists{languages/#1.def}{%
-            \expandafter\gdef\csname technica@code@language@#1@loaded\endcsname{1}%
-        }{%
-            \PackageError{technica-code}{Code language `#1' not found}{%
-                No file languages/#1.def was found on the TeX path.%
-            }%
-        }%
-    }{}%
+    \technica@loaddefinition{technica-code}{languages}{#1}%
 }
 
 % Inline generic code intentionally remains language-neutral.

@@ -83,12 +83,32 @@ That keeps documents stable if the visual style changes later.
 Open \filepath{src/main.cpp} and press \key{Esc}.
 ```
 
+`\filepath`, `\command`, and `\api` read their arguments verbatim, preserving
+backslashes, repeated hyphens, percent signs, and other literal characters.
+Their monospace text uses the surrounding font size. For snippets containing a
+closing brace, use matching delimiters that do not occur in the text:
+
+```latex
+\command{clang++ --version}
+\filepath{C:\Users\ryan\file.txt}
+\api!operator() { return value; }!
+```
+
+These three commands, and commands made with `\technicadefineinlinemacro`, must
+appear directly in paragraph text on one source line. They cannot be nested in
+arguments such as `\section{...}`, `\caption{...}`, or `\textbf{...}`; use ordinary
+LaTeX text with escaping there. `\term` and `\key` remain ordinary prose commands.
+
 Macro sets live in `macros/*.def`. Load a set on demand with
 `\technicaloadmacroset`, then use the commands that definition provides:
 
 ```latex
 \technicaloadmacroset{prose}
 ```
+
+Definition names are trimmed, so spaces around entries in `sets` are allowed.
+Loading is idempotent within the current scope. A set loaded inside a group is
+local to that group and can be loaded again outside it.
 
 New macro files should expose semantic wrappers through the Technica factories:
 
@@ -189,6 +209,10 @@ with `\technicadefinecodeblock` and `\technicadefineinlinecode`:
 \technicadefinecodeblock{python}{technica-python}
 \technicadefineinlinecode{inlinepython}{technica-python}
 ```
+
+Spaces around names in `languages` are allowed, for example `{cpp, sh}`. The
+on-demand loader also trims names and follows the caller's scope: a language
+loaded inside a group can be loaded again after the group ends.
 
 #### Per-block options and references
 
@@ -294,6 +318,13 @@ Some colors can alias others, so related surfaces stay together:
 
 Use `\technicadefinecolor` instead of raw `\definecolor` for Technica colors so
 color aliases keep their recorded hex values in sync.
+
+Defining a color that was an alias replaces its binding with the supplied color.
+For example, `\technicadefinecolor{TechnicaCodeBg}{FFFFFF}` gives code blocks an
+independent white background. Rebinding an alias updates all of its dependent
+aliases immediately, including chains of aliases. Alias targets must be named
+colors; self-references and indirect cycles produce an error. Color definitions
+and bindings follow normal TeX group scope.
 
 ## Configuration reference
 
@@ -409,7 +440,9 @@ engines. Outputs and logs go into `build/tests/<engine>/<case>/`.
 The checks compile actual documents and inspect PDF text for literal characters,
 line numbers, selected source lines, and resolved references. They also exercise
 module switches, retained title blocks, dark-theme callout text, basic class
-compatibility, and code spanning pages. Overfull boxes fail the checks.
+compatibility, and code spanning pages. Regression cases also cover literal
+prose, scoped definition loading, package load order, palette overrides and
+alias chains, and C++ keyword recognition. Overfull boxes fail the checks.
 
 Run `make install-hooks` to enable the pre-commit check requiring today's
 `\ProvidesPackage` date in staged `.sty` files.

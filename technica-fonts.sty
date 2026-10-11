@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-fonts}[2026/06/24 Technica font configuration]
+\ProvidesPackage{technica-fonts}[2026/10/11 Technica font configuration]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -107,7 +107,7 @@
             \RequirePackage{kpfonts}%
         }%
     \fi
-    \newcommand{\technicaheadingfamily}{\sffamily}
+    \providecommand{\technicaheadingfamily}{\sffamily}
 
 \else
     % XeLaTeX/LuaLaTeX path: full fontspec support.
@@ -123,7 +123,7 @@
 
     % Public heading switch. Bind through \sfdefault so headings track the
     % active sans family, including a user-provided sansfont.
-    \newcommand{\technicaheadingfamily}{%
+    \providecommand{\technicaheadingfamily}{%
         \fontfamily{\sfdefault}\selectfont
     }
 

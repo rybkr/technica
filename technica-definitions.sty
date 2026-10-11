@@ -1,0 +1,47 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{technica-definitions}[2026/10/11 Technica definition loading]
+
+\RequirePackage{expl3}
+\ExplSyntaxOn
+
+\tl_new:N \l__technica_definition_name_tl
+
+% Keep definitions and their loaded marker in the caller's scope. In particular,
+% do not add a group around the input or make just the marker global.
+\cs_new_protected:Npn \__technica_input_definition:nnn #1#2#3
+  {
+    \char_set_catcode_letter:n {64}
+    \file_input:n {#1/#2.def}
+    \char_set_catcode:nn {64} {#3}
+  }
+\cs_generate_variant:Nn \__technica_input_definition:nnn {nnx}
+
+\cs_new_protected:Npn \__technica_load_definition:nnn #1#2#3
+  {
+    \cs_if_exist:cF {technica@definition@#2@#3@loaded}
+      {
+        \file_if_exist:nTF {#2/#3.def}
+          {
+            \cs_set:cpn {technica@definition@#2@#3@loaded} {1}
+            % Capture the catcode before reading, including nested loads.
+            \__technica_input_definition:nnx {#2} {#3}
+              {\int_eval:n {\char_value_catcode:n {64}}}
+          }
+          {
+            \PackageError{#1}{Definition~`#3'~not~found}
+              {No~file~#2/#3.def~was~found~on~the~TeX~path.}
+          }
+      }
+  }
+\cs_generate_variant:Nn \__technica_load_definition:nnn {nnV}
+
+\cs_new_protected:cpn {technica@loaddefinition} #1#2#3
+  {
+    \tl_set:Nx \l__technica_definition_name_tl {#3}
+    \tl_trim_spaces:N \l__technica_definition_name_tl
+    \__technica_load_definition:nnV {#1} {#2}
+      \l__technica_definition_name_tl
+  }
+
+\ExplSyntaxOff
+\endinput
