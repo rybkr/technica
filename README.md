@@ -427,6 +427,19 @@ system write permission. To install in your personal TeX tree instead:
 make bundle TEXMFLOCAL="$(kpsewhich -var-value TEXMFHOME)"
 ```
 
+### Demo
+
+Build the three-page sample in `examples/demo.tex`:
+
+```sh
+make demo                         # XeLaTeX
+make demo ENGINE=pdflatex         # fallback fonts
+```
+
+The PDF is written to `output/pdf/technica-demo.pdf`. It demonstrates semantic
+prose, C++ and generic code blocks, terminal sessions, callouts, and references.
+Change `theme=light` to `theme=dark` in the source to preview the dark theme.
+
 ### Checks
 
 ```sh
