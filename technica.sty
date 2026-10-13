@@ -1,13 +1,21 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica}[2026/06/25 Technical writing style system]
+\ProvidesPackage{technica}[2026/10/13 Technical writing style system]
+
+% Package entry point: select modules and forward their options. Presentation
+% defaults and implementations belong to the individual technica-* packages.
 
 \RequirePackage{kvoptions}
-\SetupKeyvalOptions{family=technica, prefix=technica@}
+% Keep entry-point option storage separate from each module's internal macros.
+\SetupKeyvalOptions{family=technica, prefix=technica@main@}
 
+% All five modules are enabled by default. Each *opts value is a braced option
+% list passed through to its module, and is ignored when that module is disabled.
 \DeclareBoolOption[true]{fonts}
 \DeclareStringOption{fontopts}
 
 \DeclareStringOption{coloropts}
+% Empty means no override: technica-colors owns the default (light), and a
+% theme supplied through coloropts remains usable.
 \DeclareStringOption[]{theme}
 
 \DeclareBoolOption[true]{layout}
@@ -24,45 +32,51 @@
 
 \ProcessKeyvalOptions*
 
-\ifx\technica@coloropts\@empty\else
-    \PassOptionsToPackage{\technica@coloropts}{technica-colors}
+% Queue palette options before any module can load technica-colors. Colors are
+% loaded on demand by the enabled modules, not unconditionally by this wrapper.
+\ifx\technica@main@coloropts\@empty\else
+    \PassOptionsToPackage{\technica@main@coloropts}{technica-colors}
 \fi
 
-\ifx\technica@theme\@empty\else
-    \PassOptionsToPackage{theme={\technica@theme}}{technica-colors}
+\ifx\technica@main@theme\@empty\else
+    \PassOptionsToPackage{theme={\technica@main@theme}}{technica-colors}
 \fi
 
-\iftechnica@fonts
-    \ifx\technica@fontopts\@empty\else
-        \PassOptionsToPackage{\technica@fontopts}{technica-fonts}
+% Load fonts first to establish the heading family used by boxes and layout.
+% The remaining order is conventional: modules declare their own dependencies
+% and provide heading fallbacks when fonts are disabled. Forward options before
+% each RequirePackage so they are available during that module's initialization.
+\iftechnica@main@fonts
+    \ifx\technica@main@fontopts\@empty\else
+        \PassOptionsToPackage{\technica@main@fontopts}{technica-fonts}
     \fi
     \RequirePackage{technica-fonts}
 \fi
 
-\iftechnica@code
-    \ifx\technica@codeopts\@empty\else
-        \PassOptionsToPackage{\technica@codeopts}{technica-code}
+\iftechnica@main@code
+    \ifx\technica@main@codeopts\@empty\else
+        \PassOptionsToPackage{\technica@main@codeopts}{technica-code}
     \fi
     \RequirePackage{technica-code}
 \fi
 
-\iftechnica@boxes
-    \ifx\technica@boxopts\@empty\else
-        \PassOptionsToPackage{\technica@boxopts}{technica-boxes}
+\iftechnica@main@boxes
+    \ifx\technica@main@boxopts\@empty\else
+        \PassOptionsToPackage{\technica@main@boxopts}{technica-boxes}
     \fi
     \RequirePackage{technica-boxes}
 \fi
 
-\iftechnica@layout
-    \ifx\technica@layoutopts\@empty\else
-        \PassOptionsToPackage{\technica@layoutopts}{technica-layout}
+\iftechnica@main@layout
+    \ifx\technica@main@layoutopts\@empty\else
+        \PassOptionsToPackage{\technica@main@layoutopts}{technica-layout}
     \fi
     \RequirePackage{technica-layout}
 \fi
 
-\iftechnica@macros
-    \ifx\technica@macroopts\@empty\else
-        \PassOptionsToPackage{\technica@macroopts}{technica-macros}
+\iftechnica@main@macros
+    \ifx\technica@main@macroopts\@empty\else
+        \PassOptionsToPackage{\technica@main@macroopts}{technica-macros}
     \fi
     \RequirePackage{technica-macros}
 \fi
