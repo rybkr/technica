@@ -344,14 +344,18 @@ the top-level `theme` option instead of setting it in both places.
 
 | Option | Default / behavior |
 | --- | --- |
-| `mainfont` | Source Serif 4, if installed |
-| `sansfont` | Source Sans 3, if installed |
-| `monofont` | Source Code Pro, if installed |
+| `mainfont` | Charter, if installed |
+| `sansfont` | Avenir Next, with Demi Bold headings, if installed |
+| `monofont` | Menlo, if installed |
 | `mainfontscale` | `1.0` |
 | `sansfontscale`, `monofontscale` | `MatchLowercase` |
 | `mainfontfeatures`, `sansfontfeatures`, `monofontfeatures` | Empty; additional `fontspec` options |
 | `kpfonts` | `false`; opt-in pdfLaTeX text/math fonts |
 | `kpfontsopt` | Empty; options passed to `kpfonts` |
+
+The default sans family maps bold and bold italic to Avenir Next Demi Bold
+and Demi Bold Italic. An explicit `sansfont` uses that family's own weights;
+`sansfontfeatures` can override the default face bindings.
 
 Named fonts, scales, and features apply to XeLaTeX and LuaLaTeX. If a default
 font is missing, Technica warns and the engine's existing font remains in use.

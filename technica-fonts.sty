@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-fonts}[2026/10/13 Technica font configuration]
+\ProvidesPackage{technica-fonts}[2026/10/14 Technica font configuration]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -119,11 +119,26 @@
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures=TeX}
 
-    \technica@fonts@loadfont{\setmainfont}{\technica@fonts@mainfont}{Source Serif 4}%
+    % The default sans family uses Demi Bold for gentler headings. Apply these
+    % face bindings only to the default family; explicit sansfont choices keep
+    % their own weights. User features come last so they can override bindings.
+    \let\technica@fonts@resolvedsansfeatures\technica@fonts@sansfontfeatures
+    \ifx\technica@fonts@sansfont\@empty
+        \def\technica@fonts@resolvedsansfeatures{%
+            BoldFont={Avenir Next Demi Bold},%
+            BoldItalicFont={Avenir Next Demi Bold Italic}%
+        }%
+        \ifx\technica@fonts@sansfontfeatures\@empty\else
+            \edef\technica@fonts@resolvedsansfeatures{%
+                \technica@fonts@resolvedsansfeatures,\technica@fonts@sansfontfeatures}%
+        \fi
+    \fi
+
+    \technica@fonts@loadfont{\setmainfont}{\technica@fonts@mainfont}{Charter}%
         {\technica@fonts@mainfontscale}{\technica@fonts@mainfontfeatures}
-    \technica@fonts@loadfont{\setsansfont}{\technica@fonts@sansfont}{Source Sans 3}%
-        {\technica@fonts@sansfontscale}{\technica@fonts@sansfontfeatures}
-    \technica@fonts@loadfont{\setmonofont}{\technica@fonts@monofont}{Source Code Pro}%
+    \technica@fonts@loadfont{\setsansfont}{\technica@fonts@sansfont}{Avenir Next}%
+        {\technica@fonts@sansfontscale}{\technica@fonts@resolvedsansfeatures}
+    \technica@fonts@loadfont{\setmonofont}{\technica@fonts@monofont}{Menlo}%
         {\technica@fonts@monofontscale}{\technica@fonts@monofontfeatures}
 
     % Public heading switch. Bind through \sfdefault so headings track the
