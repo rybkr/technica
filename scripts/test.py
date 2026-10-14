@@ -53,7 +53,8 @@ def document(options, body="Module switches work.", document_class="article"):
 def cases():
     for name in ("inline", "layout", "blocks", "title", "callouts",
                  "prose-literals", "definition-loading", "definition-lists",
-                 "preloaded-boxes", "late-fonts", "colors", "cpp-keywords"):
+                 "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
+                 "listing-defaults"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
     features = ("fonts", "layout", "code", "boxes", "macros")
     bodies = {

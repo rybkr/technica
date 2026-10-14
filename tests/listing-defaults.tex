@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{technica}
+% A consuming document may configure listings independently of Technica.
+\lstset{language=C++,numbers=right}
+\makeatletter
+\lst@AddToHook{Init}{%
+  \ifx\lst@language\@empty\else
+    \errmessage{Generic or terminal listing inherited a language}%
+  \fi
+  \ifx\lst@PlaceNumber\@empty\else
+    \errmessage{Generic or terminal listing inherited line numbers}%
+  \fi
+}
+\makeatother
+\begin{document}
+\inlinecode{int return_value = 0;}
+\begin{codeblock}{Neutral block}
+int return_value = 0;
+\end{codeblock}
+\begin{terminal}
+$ make
+\end{terminal}
+\technicainputcode{Neutral file}{tests/sample.cpp}
+\end{document}

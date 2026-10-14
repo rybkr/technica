@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/10/11 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/10/14 Technica code and terminal styles]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -73,6 +73,9 @@
 \makeatletter
 
 \lstdefinestyle{technica-base}{
+    % Reset document-wide listings defaults; language styles override these.
+    language={},
+    numbers=none,
     basicstyle=\ttfamily\small\color{TechnicaInk},
     backgroundcolor=\color{TechnicaCodeBg},
     columns=fullflexible,

@@ -19,30 +19,11 @@
     listing only,
     technica listing style=technica-terminal,
     listingopts={},
+    technica-codebox,
     colback=TechnicaTerminalBg,
     colframe=TechnicaTerminalBorder,
-    coltitle=TechnicaInk,
     colbacktitle=TechnicaTerminalBg,
-    boxrule=\technica@code@boxrule,
     title=Terminal,
-    fonttitle=\ttfamily\small\bfseries,
-    breakable,
-    enhanced,
-    arc=\technica@code@arc,
-    attach boxed title to top left={xshift=8pt,yshift=-2pt},
-    boxed title style={
-        empty,
-        left=0pt,
-        right=0pt,
-        top=0pt,
-        bottom=0pt
-    },
-    left=\technica@code@left,
-    right=\technica@code@right,
-    top=\technica@code@top,
-    bottom=\technica@code@bottom,
-    before skip=\technica@code@beforeskip,
-    after skip=\technica@code@afterskip,
     #1
 }
 
