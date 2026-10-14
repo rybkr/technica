@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-fonts}[2026/10/11 Technica font configuration]
+\ProvidesPackage{technica-fonts}[2026/10/13 Technica font configuration]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -10,7 +10,7 @@
 % ------------------------------------------------------------------------------
 
 \RequirePackage{kvoptions}
-\SetupKeyvalOptions{family=technica, prefix=technica@}
+\SetupKeyvalOptions{family=technica, prefix=technica@fonts@}
 
 % ------------------------------------------------------------------------------
 % Package options
@@ -51,7 +51,7 @@
 % ------------------------------------------------------------------------------
 % Internal helpers
 % ------------------------------------------------------------------------------
-% \technica@loadfont{<setcmd>}{<useroption>}{<default>}{<scale>}{<features>}
+% \technica@fonts@loadfont{<setcmd>}{<useroption>}{<default>}{<scale>}{<features>}
 %
 % Loads a font through a fontspec setter such as \setmainfont.
 %
@@ -60,21 +60,26 @@
 %
 % Policy:
 %   - User supplied a font -> use it; raise an error if not found.
-%   - User supplied nothing -> try <default> silently; if not found,
-%     do nothing and let the engine default stand.
-\newcommand{\technica@loadfont}[5]{%
+%   - User supplied nothing -> try <default>; if not found, warn and retain
+%     the existing font for that family.
+\newcommand{\technica@fonts@loadfont}[5]{%
     \ifx\@empty#5%
-        \let\technica@extrafeatures\@empty
+        \let\technica@fonts@extrafeatures\@empty
     \else
-        \def\technica@extrafeatures{,#5}%
+        \def\technica@fonts@extrafeatures{,#5}%
     \fi
     \ifx\@empty#2%
         \IfFontExistsTF{#3}{%
-            #1{#3}[Scale=#4\technica@extrafeatures]%
-        }{}%
+            #1{#3}[Scale=#4\technica@fonts@extrafeatures]%
+        }{%
+            \PackageWarning{technica-fonts}{%
+                Default font `#3' not found.\MessageBreak
+                Keeping the existing font for \string#1%
+            }%
+        }%
     \else
         \IfFontExistsTF{#2}{%
-            #1{#2}[Scale=#4\technica@extrafeatures]%
+            #1{#2}[Scale=#4\technica@fonts@extrafeatures]%
         }{%
             \PackageError{technica-fonts}{Font `#2' not found}{%
                 The font `#2' is not installed on this system.%
@@ -95,14 +100,14 @@
     % setup.
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
-    \iftechnica@kpfonts
+    \iftechnica@fonts@kpfonts
         \@ifpackageloaded{kpfonts}{%
             \PackageWarning{technica-fonts}{%
                 kpfonts was already loaded; kpfontsopt ignored%
             }%
         }{%
-            \ifx\@empty\technica@kpfontsopt\else
-                \PassOptionsToPackage{\technica@kpfontsopt}{kpfonts}%
+            \ifx\@empty\technica@fonts@kpfontsopt\else
+                \PassOptionsToPackage{\technica@fonts@kpfontsopt}{kpfonts}%
             \fi
             \RequirePackage{kpfonts}%
         }%
@@ -114,12 +119,12 @@
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures=TeX}
 
-    \technica@loadfont{\setmainfont}{\technica@mainfont}{Source Serif 4}%
-        {\technica@mainfontscale}{\technica@mainfontfeatures}
-    \technica@loadfont{\setsansfont}{\technica@sansfont}{Source Sans 3}%
-        {\technica@sansfontscale}{\technica@sansfontfeatures}
-    \technica@loadfont{\setmonofont}{\technica@monofont}{Source Code Pro}%
-        {\technica@monofontscale}{\technica@monofontfeatures}
+    \technica@fonts@loadfont{\setmainfont}{\technica@fonts@mainfont}{Source Serif 4}%
+        {\technica@fonts@mainfontscale}{\technica@fonts@mainfontfeatures}
+    \technica@fonts@loadfont{\setsansfont}{\technica@fonts@sansfont}{Source Sans 3}%
+        {\technica@fonts@sansfontscale}{\technica@fonts@sansfontfeatures}
+    \technica@fonts@loadfont{\setmonofont}{\technica@fonts@monofont}{Source Code Pro}%
+        {\technica@fonts@monofontscale}{\technica@fonts@monofontfeatures}
 
     % Public heading switch. Bind through \sfdefault so headings track the
     % active sans family, including a user-provided sansfont.

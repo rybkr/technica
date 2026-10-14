@@ -354,8 +354,8 @@ the top-level `theme` option instead of setting it in both places.
 | `kpfontsopt` | Empty; options passed to `kpfonts` |
 
 Named fonts, scales, and features apply to XeLaTeX and LuaLaTeX. If a default
-font is missing, the engine's existing font remains in use. An explicitly
-requested missing font produces an error. pdfLaTeX uses T1 encoding and its
+font is missing, Technica warns and the engine's existing font remains in use.
+An explicitly requested missing font produces an error. pdfLaTeX uses T1 encoding and its
 existing fonts unless `kpfonts=true` is supplied; it ignores named font options.
 
 ```latex
