@@ -45,8 +45,13 @@ selection. pdfLaTeX is also supported with fallback fonts.
 \usepackage[style=all]{technica}
 \usepackage{hyperref}
 
+\title{A small example}
+\author{Your Name}
+\date{\today}
+
 \begin{document}
-\section{A small example}
+\maketitle
+\section{Introduction}
 A \term{translation unit} is compiled with \command{clang++}.
 Open \filepath{src/main.cpp} and press \key{Esc}.
 
@@ -70,8 +75,9 @@ The supported class is standard `article`. Basic `report` and `book` documents
 are also tested, but their chapter headings remain under the class's control.
 Other classes are untested. Leave global styling disabled when the class should
 own it. Technica does not load `geometry`. Page format and title layout belong to the
-consuming document. `style=all` styles the title text with the heading family,
-bold weight, and theme ink; use `title=false` to retain the host title font.
+consuming document. `style=all` uses the heading family and theme ink for the
+title, author, and date, with a bold title and regular author/date text. Use
+`title=false` to retain the host title-block fonts.
 
 ## Writing with Technica
 

@@ -4,7 +4,8 @@
 \makeatletter
 \newcommand{\checktitle}{%
   \ifx\f@family\sfdefault\else\errmessage{Wrong title family}\fi
-  \ifx\f@series\bfdefault\else\errmessage{Wrong title weight}\fi
+  \begingroup\bfseries\xdef\expectedseries{\f@series}\endgroup
+  \ifx\f@series\expectedseries\else\errmessage{Wrong title weight}\fi
   \let\actualsize\f@size
   \begingroup\LARGE\xdef\expectedsize{\f@size}\endgroup
   \ifx\actualsize\expectedsize\else\errmessage{Title size changed}\fi
@@ -14,15 +15,21 @@
 }
 \newcommand{\checkbodyfont}{%
   \ifx\f@family\rmdefault\else\errmessage{Title family leaked}\fi
-  \ifx\f@series\mddefault\else\errmessage{Title weight leaked}\fi
+  \begingroup\normalfont\xdef\expectedseries{\f@series}\endgroup
+  \ifx\f@series\expectedseries\else\errmessage{Title weight leaked}\fi
 }
-\pdfstringdefDisableCommands{\let\checktitle\@empty\let\checkbodyfont\@empty}
+\newcommand{\checkmetadatafont}{%
+  \ifx\f@family\sfdefault\else\errmessage{Wrong author or date family}\fi
+  \begingroup\normalfont\xdef\expectedseries{\f@series}\endgroup
+  \ifx\f@series\expectedseries\else\errmessage{Wrong author or date weight}\fi
+}
+\pdfstringdefDisableCommands{\let\checktitle\@empty\let\checkbodyfont\@empty\let\checkmetadatafont\@empty}
 \makeatother
 % A declaration after begin-document must also receive the title styling.
 \begin{document}
 \title{\checktitle Styled title\thanks{Acknowledgment retained.}}
-\author{\checkbodyfont Author retained}
-\date{\checkbodyfont Date retained}
+\author{\checkmetadatafont Author retained\thanks{Author note retained.}\and\checkmetadatafont Second author\\\checkmetadatafont Affiliation}
+\date{\checkmetadatafont Date retained}
 \maketitle
 \checkbodyfont Body retained.
 \end{document}

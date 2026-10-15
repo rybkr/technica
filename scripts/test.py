@@ -125,13 +125,22 @@ def cases():
             ),
         ])
         title_assertion = (
-            r"\ifx\f@family\sfdefault\else\errmessage{Title family missing}\fi"
-            r"\ifx\f@series\bfdefault\else\errmessage{Title weight missing}\fi"
-            if "title" in enabled else
-            r"\ifx\f@family\rmdefault\else\errmessage{Title family changed}\fi"
-            r"\ifx\f@series\mddefault\else\errmessage{Title weight changed}\fi"
+            r"\begingroup\technicaheadingfont"
+            if "title" in enabled else r"\begingroup\normalfont"
+        ) + (
+            r"\xdef\expectedfamily{\f@family}\xdef\expectedseries{\f@series}\endgroup"
+            r"\ifx\f@family\expectedfamily\else\errmessage{Wrong title family}\fi"
+            r"\ifx\f@series\expectedseries\else\errmessage{Wrong title weight}\fi"
         )
-        yield name, template.replace("GLOBAL_OPTIONS", options).replace("GLOBAL_ASSERTIONS", "\n".join(assertions)).replace("TITLE_ASSERTIONS", title_assertion), 1
+        metadata_assertion = (
+            r"\begingroup\normalfont\technicaheadingfamily"
+            if "title" in enabled else r"\begingroup\normalfont"
+        ) + (
+            r"\xdef\expectedfamily{\f@family}\xdef\expectedseries{\f@series}\endgroup"
+            r"\ifx\f@family\expectedfamily\else\errmessage{Wrong author/date family}\fi"
+            r"\ifx\f@series\expectedseries\else\errmessage{Wrong author/date weight}\fi"
+        )
+        yield name, template.replace("GLOBAL_OPTIONS", options).replace("GLOBAL_ASSERTIONS", "\n".join(assertions)).replace("TITLE_ASSERTIONS", title_assertion).replace("METADATA_ASSERTIONS", metadata_assertion), 1
     title_template = (ROOT / "tests/title-styling.tex").read_text()
     for cls, cls_options in (("article", ""), ("article", "titlepage"),
                              ("article", "twocolumn"), ("report", ""), ("book", "")):
@@ -185,7 +194,8 @@ def check_case(name, pdf):
             raise RuntimeError("Source inclusion ignored firstline/lastline")
     elif name.startswith("title-styling-"):
         require_text(text, "Styled title", "Author retained", "Date retained",
-                     "Body retained.", "Acknowledgment retained.")
+                     "Body retained.", "Acknowledgment retained.", "Author note retained.",
+                     "Second author")
     elif name == "title":
         require_text(text, "Custom title retained.")
     elif name == "long-code":

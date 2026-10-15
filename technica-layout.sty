@@ -162,14 +162,19 @@
     \normalfont\technicaheadingfamily\bfseries\color{TechnicaInk}%
 }
 
-% Style only the title text when it is typeset, retaining the class's size,
-% placement, author/date formatting, and title-page behavior. Leave metadata
-% untouched until maketitle, and copy title tokens without expanding thanks.
+% Scope the title-block font to maketitle. A local family default survives
+% the class's normalfont resets and author tabular cells (including and).
+% Keep class sizes and layout; copy title tokens without expanding thanks.
 \iftechnica@layout@title
 \AddToHook{cmd/maketitle/before}{%
+    \begingroup
+    \technicaheadingfamily
+    \edef\familydefault{\f@family}%
+    \normalfont\color{TechnicaInk}%
     \toks@\expandafter{\@title}%
     \edef\@title{{\noexpand\technicaheadingfont\the\toks@}}%
 }
+\AddToHook{cmd/maketitle/after}{\endgroup}
 \fi
 
 \iftechnica@layout@headings

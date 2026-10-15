@@ -374,13 +374,14 @@ and `layoutopts` requires at least one layout style to be enabled.
 
 ### Document title (`title`)
 
-`title=true` applies the heading family, bold weight, and `TechnicaInk` to the
-text rendered by `\maketitle`. It is included in `style=all`, but not in
-`layout=true`. Use `style=all,title=false` to retain the host title font.
+`title=true` applies the heading family and `TechnicaInk` to the title, author,
+and date rendered by `\maketitle`. The title is bold; author and date use regular
+weight. It is included in `style=all`, but not in
+`layout=true`. Use `style=all,title=false` to retain the host title-block fonts.
 Title styling works independently of `fonts` and `headings`; with fonts disabled,
 it uses the host sans family.
 
-The class retains its title size, spacing, alignment, author/date formatting,
+The class retains its title, author, and date sizes, spacing, alignment,
 and title-page behavior. Standard `article`, `report`, and `book` titles use
 this styling. Custom title implementations that do not render `\@title`, or
 that explicitly select another font inside the title text, may bypass it.
