@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{technica}
+\makeatletter
+\newcommand{\expectedside}{left}
+\lst@AddToHook{Init}{%
+  \def\leftside{left}\def\rightside{right}%
+  \setbox\z@\hbox{\normalfont\lst@numberstyle{999}}%
+  \@tempdima=\dimexpr\wd\z@+\lst@numbersep\relax
+  \ifx\expectedside\leftside
+    \ifdim\lst@xleftmargin<\@tempdima\errmessage{Missing left number gutter}\fi
+  \else\ifx\expectedside\rightside
+    \ifdim\lst@xrightmargin<\@tempdima\errmessage{Missing right number gutter}\fi
+  \else
+    \ifdim\lst@xleftmargin=0pt\else\errmessage{Unnumbered listing indented}\fi
+    \ifdim\lst@xrightmargin=0pt\else\errmessage{Unnumbered listing narrowed}\fi
+  \fi\fi
+}
+\makeatother
+\begin{document}
+\begin{cpp}[listingopts={firstnumber=98}]{Three-digit numbers}
+int first = 98;
+int second = 99;
+int third = 100;
+\end{cpp}
+\def\expectedside{right}
+\begin{terminal}[listingopts={numbers=right,firstnumber=998}]
+$ make
+$ make test
+\end{terminal}
+\def\expectedside{none}
+\begin{cpp}[listingopts={numbers=none}]{No numbers}
+int value = 0;
+\end{cpp}
+\end{document}

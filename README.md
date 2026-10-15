@@ -237,6 +237,11 @@ $ make
 See block \ref{code:parse} on page \pageref{code:parse}.
 ```
 
+Numbered blocks reserve an internal gutter sized for four digits in the active
+number font. For wider labels, set `listingopts={technicanumberwidth={999999}}`;
+the supplied text is measured to determine the gutter width. Unnumbered blocks
+and inline code do not reserve a gutter.
+
 Blocks share the `technicacode` counter, including terminal sessions and
 environments created by `\technicadefinecodeblock`. Titles still display the
 supplied text without a number. Compile twice to resolve references. Settings

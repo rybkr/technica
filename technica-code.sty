@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-code}[2026/10/14 Technica code and terminal styles]
+\ProvidesPackage{technica-code}[2026/10/15 Technica code and terminal styles]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -72,10 +72,36 @@
 
 \makeatletter
 
+% Keep number placement inside the listing's available width. Capture listings'
+% own placement macros so numbers=left/right/none remain the source of truth.
+\begingroup
+    \lstset{numbers=left}
+    \global\let\technica@code@leftnumbers\lst@PlaceNumber
+    \lstset{numbers=right}
+    \global\let\technica@code@rightnumbers\lst@PlaceNumber
+\endgroup
+\lst@Key{technicanumberwidth}{9999}{\def\technica@code@numberwidth{#1}}
+\lst@Key{technicagutter}{false}[t]{\lstKV@SetIf{#1}\iftechnica@code@gutter}
+\lst@AddToHook{PreInit}{%
+    \iftechnica@code@gutter
+        \lst@ifdisplaystyle
+            \setbox\@tempboxa\hbox{\normalfont
+                \lst@numberstyle{\technica@code@numberwidth}}%
+            \@tempdima=\dimexpr\wd\@tempboxa+\lst@numbersep\relax
+            \ifx\lst@PlaceNumber\technica@code@leftnumbers
+                \edef\lst@xleftmargin{\the\dimexpr\lst@xleftmargin+\@tempdima\relax}%
+            \else\ifx\lst@PlaceNumber\technica@code@rightnumbers
+                \edef\lst@xrightmargin{\the\dimexpr\lst@xrightmargin+\@tempdima\relax}%
+            \fi\fi
+        \fi
+    \fi
+}
+
 \lstdefinestyle{technica-base}{
     % Reset document-wide listings defaults; language styles override these.
     language={},
     numbers=none,
+    technicagutter=true,
     basicstyle=\ttfamily\small\color{TechnicaInk},
     backgroundcolor=\color{TechnicaCodeBg},
     columns=fullflexible,
