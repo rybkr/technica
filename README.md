@@ -138,3 +138,6 @@ View the [demo PDF](output/pdf/technica-demo.pdf) or build it from
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, demo build options,
 regression checks, and commit hooks.
+
+An [agent skill](skills/technica/SKILL.md) provides concise guidance for creating
+and editing documents with Technica.
