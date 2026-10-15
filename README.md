@@ -87,7 +87,7 @@ title, author, and date, with a bold title and regular author/date text. Use
 | Inline code | `\inlinecode`, `\inlinecpp`, `\inlinesh` |
 | Titled code blocks | `\begin{codeblock}{Title}`, `\begin{cpp}{main.cpp}` |
 | Terminal sessions | `\begin{terminal}` |
-| Callouts | `note`, `explanation`, `advice`, `warning` |
+| Callouts | `aside`, `note`, `explanation`, `advice`, `warning` |
 
 Use `\shcode{...}` or `\cppcode{...}` for code in headings and captions, with
 normal LaTeX escaping. Keep verbatim `\inline*` commands in paragraph text.

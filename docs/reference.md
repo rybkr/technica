@@ -258,12 +258,20 @@ color you want.
 
 | Environment | Use for |
 | --- | --- |
+| `aside` | Optional digression from the main argument |
 | `note` | Neutral supporting information |
 | `explanation` | Deeper explanation or mental model |
 | `advice` | Recommendation or convention |
 | `warning` | Risk, pitfall, or common mistake |
 
+An `aside` is a detour readers can skip; a `note` supports the current point.
+Both use the neutral note styling.
+
 ```latex
+\begin{aside}
+An optional digression.
+\end{aside}
+
 \begin{note}
 Supporting information.
 \end{note}

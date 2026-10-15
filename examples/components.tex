@@ -60,6 +60,11 @@ The initial request is not a retry. A budget of five retries permits up to six
 attempts in total.
 \end{note}
 
+\begin{aside}
+The term backoff also appears in network protocols, where competing senders
+wait before trying again.
+\end{aside}
+
 \begin{explanation}
 Increasing the delay gives a busy service time to recover. The ceiling keeps
 individual waits bounded; a separate budget bounds the number of attempts.

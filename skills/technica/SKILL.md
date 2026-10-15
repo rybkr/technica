@@ -40,7 +40,8 @@ and title placement to the class. `article` is supported; basic `report` and
   dictionary. Set `listingopts={terminalprompt={>>>}}` (or `terminalprompt={$}`)
   for another marker; do not include the separating space in the option. Output
   matching that prefix will also be highlighted. `\inlinesh` needs no prompt.
-- Choose `note`, `explanation`, `advice`, or `warning` by meaning.
+- Choose `aside`, `note`, `explanation`, `advice`, or `warning` by meaning.
+  Use `aside` for an optional digression from the main argument.
 - Use `\shcode{...}` and `\cppcode{...}` inside headings, captions, or other
   command arguments, e.g. `\section{Processes With \shcode{ps}}`. These use
   ordinary LaTeX escaping (`\_`, `\%`, `\#`), inherit the surrounding size,

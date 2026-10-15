@@ -16,6 +16,7 @@
 %   technica-callout
 %     Low-level environment: \begin{technica-callout}{<color>}{<title>} ...
 %
+%   aside         optional digression from the main argument
 %   note          neutral supporting information
 %   explanation   deeper explanation or mental model
 %   advice        recommendation or best practice
@@ -101,6 +102,8 @@
 \newcommand{\technicadefinecallout}[3]{%
     \newtcolorbox{#1}{technica-callout-style={#3}{#2}}%
 }
+
+\technicadefinecallout{aside}{Aside}{TechnicaNote}
 
 \technicadefinecallout{note}{Note}{TechnicaNote}
 
