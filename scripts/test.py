@@ -60,7 +60,7 @@ def cases():
     for name in ("defaults", "inline", "layout", "blocks", "title", "callouts",
                  "prose-literals", "definition-loading", "definition-lists",
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
-                 "listing-defaults", "number-gutter", "number-gutter-color"):
+                 "listing-defaults", "number-gutter", "number-gutter-color", "terminal-prompts"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
     toc_template = (ROOT / "tests/toc.tex").read_text()
     for cls in ("article", "report", "book"):
@@ -195,6 +195,48 @@ def check_case(name, pdf):
                      "Further reading", "References and next steps")
         if "Hidden level" in first_page:
             raise RuntimeError("TOC ignored document depth")
+    elif name == "terminal-prompts":
+        xml = ET.fromstring(subprocess.check_output(
+            ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
+        ))
+        colors = {font.get("id"): font.get("color") for font in xml.iter("fontspec")}
+        expected = {
+            "ps": "#008800",
+            "6191 ttys001 0:00.00 ps": "#0000cc",
+            "output ps ls cd": "#0000cc",
+            "indented output": "#0000cc",
+            "not command": "#0000cc",
+            "echo no space": "#0000cc",
+            "old prompt output": "#0000cc",
+            ">>>": "#cc0000",
+            "echo custom": "#008800",
+            "custom output ps": "#0000cc",
+            "default marker output": "#0000cc",
+            "echo dollar": "#008800",
+            "value $ output": "#0000cc",
+            "echo restored": "#008800",
+            "restored output": "#0000cc",
+            "ps ls cd": "#0000cc",
+            "WRAPPEDINPUT": "#008800",
+            "after wrapped output": "#0000cc",
+        }
+        nodes = [("".join(node.itertext()).strip(), colors[node.get("font")])
+                 for node in xml.iter("text")]
+
+        def same_color(actual, expected):
+            return all(abs(int(actual[i:i + 2], 16) - int(expected[i:i + 2], 16)) <= 1
+                       for i in (1, 3, 5))
+
+        for phrase, expected_color in expected.items():
+            matches = [color for value, color in nodes
+                       if value == phrase or (phrase == "old prompt output" and value == "$ " + phrase)]
+            if len(matches) != 1 or not same_color(matches[0], expected_color):
+                raise RuntimeError(f"Terminal text {phrase!r}: expected {expected_color}, got {matches}")
+        # Program names, arguments, and shell punctuation all share input color.
+        for phrase in ("custom-tool --flag", "HOME", "result.txt", "arbitrary --flag"):
+            matches = [color for value, color in nodes if phrase in value]
+            if not matches or any(not same_color(color, "#008800") for color in matches):
+                raise RuntimeError(f"Terminal input lost its color: {phrase!r}")
     elif name == "number-gutter-color":
         xml = ET.fromstring(subprocess.check_output(
             ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
@@ -224,11 +266,11 @@ def check_case(name, pdf):
                      "100% literal #1 $HOME file_name & value",
                      r'''printf '%s\n' "$HOME" | sort''', "if (ready) { run(); }")
     elif name == "definition-loading":
-        require_text(text, "first", "second", "Second term", "$ make")
+        require_text(text, "first", "second", "Second term", "make")
     elif name == "blocks":
         # Check numbering, source slicing, factory options, and resolved labels.
         for number, code in ((20, "int first = 20;"), (21, "int second = 21;"),
-                             (30, "custom = works"), (35, "$ cat input | sort"),
+                             (30, "custom = works"), (35, "cat input | sort"),
                              (40, "int imported = 40;"), (41, "int selected = 41;")):
             if not re.search(rf"(?m)^\s*{number}\s+{re.escape(code)}", text):
                 raise RuntimeError(f"Missing numbered line {number}: {code!r}")

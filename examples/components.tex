@@ -29,8 +29,8 @@ std::chrono::milliseconds retry_delay(unsigned retry) {
 \end{cpp}
 
 \begin{terminal}[title={Build and inspect}]
-$ clang++ -std=c++17 retry.cpp -o retry
-$ ./retry
+❯ clang++ -std=c++17 retry.cpp -o retry
+❯ ./retry
 attempt 1: 100 ms
 attempt 2: 200 ms
 attempt 3: 400 ms
@@ -84,7 +84,7 @@ can duplicate its effect unless the operation is safe to repeat.
 return std::min(delay * 2, cap);
 \end{cpp}
 \begin{terminal}[title={Run the checks}]
-$ make test
+❯ make test
 All checks passed.
 \end{terminal}
 \end{minipage}

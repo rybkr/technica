@@ -89,6 +89,9 @@ title, author, and date, with a bold title and regular author/date text. Use
 | Terminal sessions | `\begin{terminal}` |
 | Callouts | `note`, `explanation`, `advice`, `warning` |
 
+Terminal input lines begin with `❯ `; output remains plain. Customize the marker
+with `listingopts={terminalprompt={>>>}}`. Inline shell text is all input.
+
 C++ blocks have line numbers by default; generic blocks and terminal sessions
 have none. Blocks support local listing options, labels, and source-file input.
 See the [API reference](docs/reference.md#api) for examples and extension factories.

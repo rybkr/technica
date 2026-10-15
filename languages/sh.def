@@ -1,27 +1,92 @@
 % Technica shell and terminal listings language.
 
+% Draw the prompt independently of the host font on all supported engines.
+\newif\iftechnica@sh@input
+\def\technica@sh@defaultprompt{❯}
+\def\technica@sh@chevron{%
+    \tikz[baseline=0pt,x=1ex,y=1ex]{%
+        \fill (0,0) -- (.38,.55) -- (0,1.1) -- (.28,1.1)
+            -- (.66,.55) -- (.28,0) -- cycle;}%
+}
+\ExplSyntaxOn
+\cs_new:Npn \technica@sh@promptlength #1 { \str_count:n {#1} }
+\ExplSyntaxOff
+\lst@Key{terminalprompt}{❯}{%
+    \def\technica@sh@prompttext{#1}%
+    \ifx\technica@sh@prompttext\technica@sh@defaultprompt
+        \def\technica@sh@promptwidth{2}%
+    \else
+        \edef\technica@sh@promptwidth{\number\numexpr\technica@sh@promptlength{#1}+1\relax}%
+    \fi
+}
+\def\technica@sh@prompt{%
+    \def\technica@sh@text{❯}%
+    \ifx\technica@sh@prompttext\technica@sh@text
+        \technica@sh@chevron
+    \else
+        \expandafter\detokenize\expandafter{\technica@sh@prompttext}%
+    \fi
+    \lst@outputspace
+}
+\def\technica@sh@match{%
+    \lst@XPrintToken
+    \ifdim\lst@currlwidth=\z@
+        \ifnum\lst@pos=\z@
+            \global\technica@sh@inputtrue
+            \lst@token{{\color{TechnicaPrompt}\technica@sh@prompt}}%
+        \else
+            \lst@token{{\technica@sh@prompt}}%
+        \fi
+    \else
+        \lst@token{{\technica@sh@prompt}}%
+    \fi
+    \lst@length\technica@sh@promptwidth\relax
+    \lst@XPrintToken
+    \lst@CArgEmptyGobble
+}
+% Unlike the literate key, preserve a trailing active space in the matcher.
+\begingroup\lccode`\~=`\ \relax\lowercase{%
+\gdef\technica@sh@installprompt{%
+    \expandafter\lst@DefActive\expandafter\lst@temp\expandafter{\technica@sh@prompttext}%
+    \lst@lAddTo\lst@temp{~}%
+    \expandafter\lst@CArg\lst@temp\relax\lst@CDef
+        {}{\technica@sh@match}\@empty
+}}
+\endgroup
+\lst@AddToHook{SelectCharTable}{%
+    \iftechnica@sh@terminal
+        % listings activates only byte-sized characters itself. Unicode engines
+        % must also tokenize the default marker through the character table.
+        \ifdefined\Umathcode\catcode"276F=\active\fi
+        \technica@sh@installprompt
+    \fi
+}
+% Reset only at physical source lines, so wrapped commands keep their color.
+\lst@AddToHook{InitVarsBOL}{\global\technica@sh@inputfalse}
+\def\technica@sh@style{%
+    \iftechnica@sh@terminal
+        \iftechnica@sh@input
+            \def\lst@thestyle{\color{TechnicaCommand}}%
+        \else
+            \def\lst@thestyle{\color{TechnicaInk}}%
+        \fi
+    \fi
+}
+\lst@AddToHook{Output}{\technica@sh@style}
+\lst@AddToHook{OutputOther}{\technica@sh@style}
+
 \lstdefinestyle{technica-terminal}{
     style=technica-base,
-    backgroundcolor=\color{TechnicaTerminalBg},
-    alsoletter={$/.+-},
-    keywords=[1]{$},
-    % Shell reserved words (operators are punctuation, not command names).
-    keywords=[2]{case,do,done,elif,else,esac,fi,for,if,in,then,until,while},
-    % Portable shell builtins.
-    morekeywords=[2]{alias,bg,break,cd,command,continue,echo,eval,exec,exit,export,
-        false,fc,fg,getopts,jobs,kill,printf,pwd,read,readonly,return,set,
-        shift,test,times,trap,true,type,ulimit,umask,unalias,unset,wait},
-    % Common standard Unix utilities; exclude third-party tools and compilers.
-    morekeywords=[2]{awk,basename,cat,chgrp,chmod,chown,cksum,cmp,comm,cp,cut,
-        date,dd,df,diff,dirname,du,env,expand,expr,file,find,fold,grep,
-        head,id,join,ln,locale,logger,ls,man,mkdir,mkfifo,mv,nice,nohup,od,
-        paste,pathchk,pr,ps,rm,rmdir,sed,sh,sleep,sort,split,stty,tail,tee,
-        time,touch,tr,tty,uname,unexpand,uniq,wc,who,xargs},
-    sensitive=true,
-    keywordstyle=[1]\color{TechnicaPrompt},
-    keywordstyle=[2]\color{TechnicaCommand},
-    commentstyle=\color{TechnicaComment},
-    stringstyle=\color{TechnicaCommand}
+    technicaterminal=true,
+    terminalprompt={❯},
+    literate={❯}{{\technica@sh@chevron}}1,
+    backgroundcolor=\color{TechnicaTerminalBg}
+}
+
+% Inline shell snippets are all input; they have no transcript prompt or output.
+\lstdefinestyle{technica-shell}{
+    style=technica-base,
+    basicstyle=\def\textquotedbl{\char34\relax}\ttfamily\small\color{TechnicaCommand}
 }
 
 \newtcblisting[use counter=technicacode]{terminal}[1][]{
@@ -34,6 +99,6 @@
     #1
 }
 
-\technicadefineinlinecode{inlinesh}{technica-terminal}
+\technicadefineinlinecode{inlinesh}{technica-shell}
 
 \endinput

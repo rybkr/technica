@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{technica}
+\definecolor{TechnicaPrompt}{HTML}{CC0000}
+\definecolor{TechnicaCommand}{HTML}{008800}
+\definecolor{TechnicaInk}{HTML}{0000CC}
+\begin{document}
+\begin{terminal}
+❯ ps
+PID TTY TIME CMD
+6172 ttys001 0:00.05 zsh
+6191 ttys001 0:00.00 ps
+❯ custom-tool --flag "$HOME" | cat > result.txt
+output ps ls cd
+❯
+not❯ command
+  ❯ indented output
+❯echo no space
+$ old prompt output
+\end{terminal}
+\begin{terminal}[listingopts={terminalprompt={>>>},numbers=left}]
+>>> echo custom
+custom output ps
+❯ default marker output
+\end{terminal}
+\begin{terminal}[listingopts={terminalprompt={$}}]
+$ echo dollar
+value $ output
+\end{terminal}
+\begin{terminal}
+❯ echo restored
+restored output
+\end{terminal}
+\begin{terminal}[width=5cm]
+❯ echo one two three four five six seven WRAPPEDINPUT
+after wrapped output
+\end{terminal}
+\inlinesh!arbitrary --flag "$HOME" | ps!
+
+Body ink after terminal.
+\begin{codeblock}{Plain}
+ps ls cd
+\end{codeblock}
+\end{document}

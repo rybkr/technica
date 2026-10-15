@@ -122,14 +122,41 @@ int main() {
 
 #### `terminal`
 
-Terminal session block.
+Terminal session block. A command line starts with `❯` followed by a literal
+space in the first column. The prompt uses `TechnicaPrompt`; the entire command
+(including arguments, operators, and arbitrary program names) uses
+`TechnicaCommand`. All other lines use `TechnicaInk`, without keyword matching.
+Wrapped command lines retain their input color. Indented markers, bare markers,
+and markers within output do not start commands.
 
 ```latex
 \begin{terminal}
-$ clang++ main.cpp
-$ ./a.out
+❯ clang++ main.cpp
+❯ ./a.out
 \end{terminal}
 ```
+
+Set `terminalprompt` in `listingopts` to change the marker for a block. Use
+`❯` or a nonempty printable ASCII marker without spaces; the required separating
+space is added by the matcher, so do not include it in the option:
+
+```latex
+\begin{terminal}[listingopts={terminalprompt={>>>}}]
+>>> ps
+PID TTY TIME CMD
+6191 ttys001 0:00.00 ps
+\end{terminal}
+```
+
+`terminalprompt={$}` supports traditional transcripts. This is a source-line
+convention, not a shell parser: output beginning with the configured marker and
+a space is also treated as input. Choose another marker if output would collide.
+Continuation lines need their own prompt to receive input coloring. Existing
+`$ ` transcripts must change to `❯ ` or select `terminalprompt={$}`.
+`\inlinesh` colors its entire contents as input without requiring a prompt.
+The default chevron is drawn independently of the document font on all engines.
+It is omitted from copied PDF text; choose an ASCII marker if copied prompts
+are needed.
 
 Language-specific listings live in `languages/*.def`. Load a language on demand
 with `\technicaloadcodelanguage`, then use the environments or inline commands
@@ -175,7 +202,7 @@ return value;
 \end{cpp}
 
 \begin{terminal}[title={Build},listingopts={numbers=none}]
-$ make
+❯ make
 \end{terminal}
 
 See block \ref{code:parse} on page \pageref{code:parse}.
