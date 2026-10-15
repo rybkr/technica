@@ -1,6 +1,21 @@
 \documentclass{article}
-\usepackage[fonts=false,boxes=false,code=false,macros=false]{technica}
+% Capture the class's page format before loading Technica.
+\edef\savedpageformat{%
+  \the\paperwidth,\the\paperheight,\the\textwidth,\the\textheight,%
+  \the\oddsidemargin,\the\evensidemargin,\the\topmargin,%
+  \the\headheight,\the\headsep,\the\footskip}
+\usepackage[layout=true,fonts=false,boxes=false,code=false,macros=false]{technica}
 \begin{document}
+\makeatletter
+\@ifpackageloaded{geometry}{\errmessage{Technica loaded geometry}}{}
+\makeatother
+\edef\currentpageformat{%
+  \the\paperwidth,\the\paperheight,\the\textwidth,\the\textheight,%
+  \the\oddsidemargin,\the\evensidemargin,\the\topmargin,%
+  \the\headheight,\the\headsep,\the\footskip}
+\ifx\savedpageformat\currentpageformat\else
+  \errmessage{Technica changed the class page format}
+\fi
 \section{Independent layout}
 Layout works without fonts or boxes.
 \end{document}

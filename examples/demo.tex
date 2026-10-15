@@ -1,7 +1,8 @@
 % Build from the repository root with: make demo
 % Change theme=light to theme=dark to preview the other built-in theme.
+% Page format and title styling belong to this document and its class.
 \documentclass{article}
-\usepackage[theme=light]{technica}
+\usepackage[fonts=true,layout=true,theme=light]{technica}
 \usepackage{hyperref}
 
 \hypersetup{
@@ -134,13 +135,13 @@ calculation is easier to inspect and test with exact expected values.
 
 \subsection{Use the style in your own document}
 
-The source of this sample uses the standard article class and the default page
-dimensions. Start with the following preamble; choose the dark theme by
-changing \inlinecode{light} to \inlinecode{dark}.
+This sample uses the standard article class for its page format and title.
+Technica leaves those choices to your document. Start with the following
+preamble; choose the dark theme by changing \inlinecode{light} to \inlinecode{dark}.
 
 \begin{codeblock}{Minimal preamble}
 \documentclass{article}
-\usepackage[theme=light]{technica}
+\usepackage[fonts=true,layout=true,theme=light]{technica}
 \usepackage{hyperref}
 \end{codeblock}
 

@@ -2,7 +2,7 @@
 
 Technica is a small LaTeX style system for technical documents: tutorials,
 course notes, reference material, engineering reports, and code-heavy articles.
-It provides a restrained page layout, semantic prose commands, code listings,
+It provides typography, semantic prose commands, code listings,
 terminal sessions, and callouts behind one package entry point.
 
 Load it with:
@@ -20,9 +20,8 @@ chapter headings stay under the class's control. Technica styles section-level
 headings, but does not provide a chapter design. Other classes are untested;
 use `layout=false` when the class should own the layout.
 
-To keep an article's existing title block while using the rest of Technica's
-layout, pass `layoutopts={title=false}`. For non-article classes, title styling
-is skipped with a warning; `title=false` suppresses that warning.
+The document class or consuming document controls page format and title styling.
+Technica does not load `geometry` or redefine `\maketitle`.
 
 Select either built-in theme at package load time:
 
@@ -32,15 +31,6 @@ Select either built-in theme at package load time:
 
 The layout module applies the theme's page background and body text colors.
 With `layout=false`, the consuming document owns those colors.
-
-Technica defaults to a 7in by 10in page. Pass layout options through
-`layoutopts`; use a named geometry paper size with `papersize`, or provide
-custom dimensions with `paperwidth` and `paperheight`:
-
-```latex
-\usepackage[layoutopts={papersize=letterpaper}]{technica}
-\usepackage[layoutopts={paperwidth=6in,paperheight=9in}]{technica}
-```
 
 Callout boxes are enabled by default. Disable them with `boxes=false`, or pass
 box tuning options through `boxopts`:
@@ -375,14 +365,9 @@ existing fonts unless `kpfonts=true` is supplied; it ignores named font options.
 
 | Option | Default / behavior |
 | --- | --- |
-| `papersize` | Empty; named `geometry` size such as `a4paper`, overrides custom dimensions |
-| `paperwidth`, `paperheight` | `7in`, `10in` |
-| `margin` | `0.75in` |
-| `headheight` | `14pt` |
 | `parskip` | `6pt plus 2pt minus 1pt` |
 | `parindent` | `0pt` |
 | `titlespacing` | `true`; applies Technica's section spacing |
-| `title` | `true`; applies the article title design |
 | `colorlinks` | `true`; styles links if `hyperref` is loaded |
 
 Technica does not load `hyperref`. Load it in the preamble to enable links;
@@ -412,7 +397,7 @@ leaves section spacing to `titlesec`; it still applies heading typography.
 
 ## Installation and development
 
-A TeX installation with `listings`, `tcolorbox`, `geometry`, `titlesec`,
+A TeX installation with `listings`, `tcolorbox`, `titlesec`,
 `caption`, `enumitem`, `microtype`, `xurl`, and their dependencies is required.
 XeLaTeX and LuaLaTeX also use `fontspec`. No shell escape or external syntax
 highlighter is needed.

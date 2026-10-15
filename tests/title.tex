@@ -3,7 +3,7 @@
 \def\@maketitle{Custom title retained.}
 \let\savedtitle\@maketitle
 \makeatother
-\usepackage[layoutopts={title=false}]{technica}
+\usepackage[fonts=true,layout=true]{technica}
 \makeatletter
 \ifx\savedtitle\@maketitle\else
   \errmessage{Technica replaced the custom title}
@@ -12,5 +12,5 @@
 \begin{document}
 \maketitle
 \section{Still styled}
-Title opt-out keeps the rest of the layout.
+Custom titles coexist with Technica typography.
 \end{document}
