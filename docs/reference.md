@@ -92,9 +92,26 @@ braces (including unmatched braces) or backslashes:
 
 These commands let `listings` read the input verbatim. Keep them in ordinary
 paragraph text, outside arguments to other commands such as `\section`,
-`\caption`, or `\textbf`. Use ordinary LaTeX text with normal escaping in
-headings and captions. Inline snippets must stay on one source
+`\caption`, or `\textbf`. Inline snippets must stay on one source
 line. A literal closing brace requires the delimiter form.
+
+For headings, captions, and other command arguments, use `\shcode{...}` or
+`\cppcode{...}` instead:
+
+```latex
+\section{Looking at Processes With \shcode{ps}}
+\section{Using \cppcode{std::vector<int>}}
+\caption{Output from \shcode{my\_command}}
+```
+
+These are ordinary LaTeX text commands, not verbatim readers. Escape special
+characters normally (`\_`, `\%`, `\#`, `\&`, `\$`, `\{`, `\}`), and use
+`\textbackslash{}` for a backslash. They use monospace text at the surrounding
+font size and weight; `\shcode` uses `TechnicaCommand` and `\cppcode` uses
+`TechnicaInk`. They do not perform syntax highlighting or accept delimiter
+syntax. Both survive table-of-contents and caption writes and produce plain
+text in PDF bookmarks when `hyperref` is loaded, in either package order.
+Each is available with its corresponding language definition.
 
 ### Code Blocks
 

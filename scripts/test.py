@@ -62,6 +62,13 @@ def cases():
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
                  "listing-defaults", "number-gutter", "number-gutter-color", "terminal-prompts"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
+    argument_template = (ROOT / "tests/argument-code.tex").read_text()
+    for order in ("before", "after", "none"):
+        hyperref = r"\usepackage{hyperref}"
+        source = argument_template.replace(
+            "HYPERREF_BEFORE", hyperref if order == "before" else ""
+        ).replace("HYPERREF_AFTER", hyperref if order == "after" else "")
+        yield f"argument-code-{order}", source, 2
     toc_template = (ROOT / "tests/toc.tex").read_text()
     for cls in ("article", "report", "book"):
         for order in ("before", "after", "none"):
@@ -189,7 +196,17 @@ def cases():
 
 def check_case(name, pdf):
     text = pdf_text(pdf)
-    if name.startswith("toc-"):
+    if name.startswith("argument-code-"):
+        # OT1 draws escaped underscores as rules; Unicode fonts use a glyph.
+        normalized = " ".join(text.replace("_", " ").split())
+        for phrase in ("Looking at Processes With ps", "Using std::vector<int>",
+                       "Escaping file name and 100%", "Output of ps and std::vector<int>"):
+            if normalized.count(phrase) != 2:
+                raise RuntimeError(f"Missing heading/caption or contents entry: {phrase}")
+        require_text(normalized, "Nested ps -ef and value type.")
+        if "Token not allowed in a PDF string" in pdf.with_suffix(".log").read_text():
+            raise RuntimeError("Code formatting leaked into bookmarks")
+    elif name.startswith("toc-"):
         first_page = text.split("\f")[0]
         require_text(first_page, "Document guide", "Starting points", "A short entry",
                      "Further reading", "References and next steps")

@@ -1,0 +1,23 @@
+\documentclass{article}
+HYPERREF_BEFORE
+\usepackage{technica}
+HYPERREF_AFTER
+\begin{document}
+\tableofcontents
+\listoffigures
+\section{Looking at Processes With \shcode{ps}}
+\section{Using \cppcode{std::vector<int>}}
+\section{Escaping \shcode{file\_name} and \cppcode{100\%}}
+\textbf{Nested \shcode{ps -ef} and \cppcode{value\_type}.}
+\begin{figure}[h]
+\centering Example.
+\caption{Output of \shcode{ps} and \cppcode{std::vector<int>}}
+\end{figure}
+\makeatletter
+\@ifpackageloaded{hyperref}{%
+  \pdfstringdef\actual{Using \shcode{ps} and \cppcode{std::vector<int>} with \shcode{file\_name} and \cppcode{100\%}}%
+  \pdfstringdef\expected{Using ps and std::vector<int> with file\_name and 100\%}%
+  \ifx\actual\expected\else\errmessage{Code bookmark text differs from plain text}\fi
+}{}
+\makeatother
+\end{document}

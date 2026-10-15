@@ -101,4 +101,10 @@
 
 \technicadefineinlinecode{inlinesh}{technica-shell}
 
+% Ordinary LaTeX arguments survive headings, captions, and auxiliary files.
+\DeclareRobustCommand{\shcode}[1]{{\ttfamily\color{TechnicaCommand}#1}}
+\AddToHook{package/hyperref/after}{%
+    \pdfstringdefDisableCommands{\def\shcode#1{#1}}%
+}
+
 \endinput

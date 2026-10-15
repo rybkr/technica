@@ -89,6 +89,9 @@ title, author, and date, with a bold title and regular author/date text. Use
 | Terminal sessions | `\begin{terminal}` |
 | Callouts | `note`, `explanation`, `advice`, `warning` |
 
+Use `\shcode{...}` or `\cppcode{...}` for code in headings and captions, with
+normal LaTeX escaping. Keep verbatim `\inline*` commands in paragraph text.
+
 Terminal input lines begin with `❯ `; output remains plain. Customize the marker
 with `listingopts={terminalprompt={>>>}}`. Inline shell text is all input.
 

@@ -29,4 +29,10 @@
 \technicadefinecodeblock{cpp}{technica-cpp}
 \technicadefineinlinecode{inlinecpp}{technica-cpp}
 
+% No verbatim scanning or syntax parsing inside a moving argument.
+\DeclareRobustCommand{\cppcode}[1]{{\ttfamily\color{TechnicaInk}#1}}
+\AddToHook{package/hyperref/after}{%
+    \pdfstringdefDisableCommands{\def\cppcode#1{#1}}%
+}
+
 \endinput

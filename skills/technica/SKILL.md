@@ -41,7 +41,11 @@ and title placement to the class. `article` is supported; basic `report` and
   for another marker; do not include the separating space in the option. Output
   matching that prefix will also be highlighted. `\inlinesh` needs no prompt.
 - Choose `note`, `explanation`, `advice`, or `warning` by meaning.
-- Literal prose commands (`\filepath`, `\command`, `\api`) and inline code
+- Use `\shcode{...}` and `\cppcode{...}` inside headings, captions, or other
+  command arguments, e.g. `\section{Processes With \shcode{ps}}`. These use
+  ordinary LaTeX escaping (`\_`, `\%`, `\#`), inherit the surrounding size,
+  and produce plain-text bookmarks; they do not syntax-highlight.
+- Literal prose commands (`\filepath`, `\command`, `\api`) and verbatim inline code
   must stay on one source line, directly in paragraph text. Do not nest them
   inside headings, captions, or other command arguments. Use delimiter syntax
   for literal closing braces, e.g. `\inlinecpp!if (ready) { run(); }!`.
