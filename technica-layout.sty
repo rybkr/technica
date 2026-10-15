@@ -21,9 +21,19 @@
 %               titlesec's own defaults (useful when another package owns
 %               vertical rhythm).
 %
-% colorlinks:   Boolean. False suppresses colored hyperlinks (for print).
+% headings, paragraphs, lists, captions: independent typography switches.
+% pagecolors, hyperlinks: opt-in page and link styling.
+% colorlinks:   Boolean. False suppresses colored hyperlinks (for print),
+%               only when hyperlinks=true.
 % ------------------------------------------------------------------------------
 
+
+\DeclareBoolOption[true]{headings}
+\DeclareBoolOption[true]{paragraphs}
+\DeclareBoolOption[true]{lists}
+\DeclareBoolOption[true]{captions}
+\DeclareBoolOption[false]{pagecolors}
+\DeclareBoolOption[false]{hyperlinks}
 
 \DeclareStringOption[6pt plus 2pt minus 1pt]{parskip}
 \DeclareStringOption[0pt]{parindent}
@@ -33,11 +43,6 @@
 
 \ProcessKeyvalOptions*
 
-% Reserved validation hook for future option combinations.
-\iftechnica@layout@colorlinks\else
-    % colorlinks=false is valid alone; no pairing requirement.
-\fi
-
 \RequirePackage{technica-colors}
 
 % ------------------------------------------------------------------------------
@@ -45,6 +50,7 @@
 % ------------------------------------------------------------------------------
 % Paragraph rhythm is intentionally option-driven; footnote spacing is fixed as
 % part of the house layout.
+\iftechnica@layout@paragraphs
 \setlength{\parindent}{\technica@layout@parindent}
 \setlength{\parskip}{\technica@layout@parskip}
 \setlength{\skip\footins}{14pt plus 4pt minus 2pt}
@@ -59,12 +65,14 @@
 \clubpenalty=10000
 \widowpenalty=10000
 \displaywidowpenalty=10000
+\fi
 
 % ------------------------------------------------------------------------------
 % Document colors
 % ------------------------------------------------------------------------------
 % Apply the selected theme to the page surface and default text color. This is
 % separate from hyperlink setup so themes work whether or not hyperref is loaded.
+\iftechnica@layout@pagecolors
 \AtBeginDocument{%
     \pagecolor{TechnicaPaper}%
     \color{TechnicaInk}%
@@ -72,12 +80,15 @@
     \let\XC@default@color\XC@current@color
 }
 
+\fi
+
 % ------------------------------------------------------------------------------
 % Hyperlinks
 % ------------------------------------------------------------------------------
 % Deferred to \AtBeginDocument so hyperref can be loaded by the parent package,
 % document class, or user before we configure it. This package intentionally does
 % not load hyperref itself, which avoids option clashes.
+\iftechnica@layout@hyperlinks
 \AtBeginDocument{%
     \@ifpackageloaded{hyperref}{%
         \iftechnica@layout@colorlinks
@@ -101,12 +112,14 @@
         }%
     }%
 }
+\fi
 
 % ------------------------------------------------------------------------------
 % Captions
 % ------------------------------------------------------------------------------
 % Captions use muted ink and compact spacing to keep figure/table annotations
 % present without competing with body text.
+\iftechnica@layout@captions
 \RequirePackage{caption}
 \captionsetup{
     labelfont={bf,color=TechnicaMutedInk},
@@ -114,11 +127,14 @@
     margin=10pt,
     skip=6pt
 }
+\fi
 
 % ------------------------------------------------------------------------------
 % Lists
 % ------------------------------------------------------------------------------
 % Lists inherit the document's paragraph rhythm but keep item spacing compact.
+
+\iftechnica@layout@lists
 \RequirePackage{enumitem}
 \setlist{
     itemsep=2pt plus 1pt,
@@ -127,14 +143,19 @@
     leftmargin=*
 }
 
+\fi
+
+\iftechnica@layout@hyperlinks
 % Better line breaking for long URLs in technical prose.
 \RequirePackage{xurl}
+\fi
 
 % ------------------------------------------------------------------------------
 % Headings
 % ------------------------------------------------------------------------------
 % \technicaheadingfont is public so other Technica modules can align with the
 % same heading face, weight, and colour.
+\iftechnica@layout@headings
 \RequirePackage{titlesec}
 
 \providecommand{\technicaheadingfamily}{\sffamily}
@@ -157,6 +178,8 @@
         {0pt}{14pt plus 4pt minus 2pt}{5pt plus 1pt}
     \titlespacing*{\subsubsection}%
         {0pt}{10pt plus 3pt minus 1pt}{3pt plus 1pt}
+\fi
+
 \fi
 
 \endinput

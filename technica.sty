@@ -11,7 +11,16 @@
 % Global document styling (fonts and layout) is opt-in. Component modules
 % remain enabled by default. Each *opts value is a braced option list passed
 % through to its module, and is ignored when that module is disabled.
-\DeclareBoolOption[false]{fonts}
+% Empty switch values mean "inherit the preset". Resolve them only after all
+% options are parsed, so explicit true/false always wins over style and layout.
+\DeclareStringOption[]{style}
+\DeclareStringOption[]{fonts}[true]
+\DeclareStringOption[]{headings}[true]
+\DeclareStringOption[]{paragraphs}[true]
+\DeclareStringOption[]{lists}[true]
+\DeclareStringOption[]{captions}[true]
+\DeclareStringOption[]{pagecolors}[true]
+\DeclareStringOption[]{hyperlinks}[true]
 \DeclareStringOption{fontopts}
 
 \DeclareStringOption{coloropts}
@@ -33,6 +42,64 @@
 
 \ProcessKeyvalOptions*
 
+\def\technica@main@all{all}
+\ifx\technica@main@style\@empty\else
+    \ifx\technica@main@style\technica@main@all\else
+        \PackageError{technica}{Unknown style `\technica@main@style'}{Use style=all or omit style.}
+    \fi
+\fi
+\def\technica@main@forwardstyles{%
+    % Resolved switches follow layoutopts so wrapper controls remain authoritative.
+    \@for\technica@main@feature:=headings,paragraphs,lists,captions,pagecolors,hyperlinks\do{%
+        \csname iftechnica@main@\technica@main@feature enabled\endcsname
+            \edef\technica@main@option{\technica@main@feature=true}%
+        \else
+            \edef\technica@main@option{\technica@main@feature=false}%
+        \fi
+        \expandafter\PassOptionsToPackage\expandafter{\technica@main@option}{technica-layout}%
+    }
+}
+
+\newif\iftechnica@main@loadlayout
+\def\technica@main@resolve#1#2{%
+    \expandafter\newif\csname iftechnica@main@#1enabled\endcsname
+    \csname technica@main@#1enabled#2\endcsname
+    \ifx\technica@main@style\technica@main@all
+        \csname technica@main@#1enabledtrue\endcsname
+    \fi
+    \expandafter\let\expandafter\technica@main@value\csname technica@main@#1\endcsname
+    \ifx\technica@main@value\@empty\else
+        \def\technica@main@true{true}%
+        \def\technica@main@false{false}%
+        \ifx\technica@main@value\technica@main@true
+            \csname technica@main@#1enabledtrue\endcsname
+        \else\ifx\technica@main@value\technica@main@false
+            \csname technica@main@#1enabledfalse\endcsname
+        \else
+            \PackageError{technica}{Invalid value for #1}{Use true or false.}%
+        \fi\fi
+    \fi
+}
+\technica@main@resolve{fonts}{false}
+\@for\technica@main@feature:=headings,paragraphs,lists,captions,pagecolors,hyperlinks\do{%
+    \def\technica@main@default{false}%
+    \iftechnica@main@layout
+        \def\technica@main@default{true}%
+    \fi
+    \def\technica@main@pagecolorsname{pagecolors}%
+    \def\technica@main@hyperlinksname{hyperlinks}%
+    \ifx\technica@main@feature\technica@main@pagecolorsname
+        \def\technica@main@default{false}%
+    \fi
+    \ifx\technica@main@feature\technica@main@hyperlinksname
+        \def\technica@main@default{false}%
+    \fi
+    \technica@main@resolve{\technica@main@feature}{\technica@main@default}%
+    \csname iftechnica@main@\technica@main@feature enabled\endcsname
+        \technica@main@loadlayouttrue
+    \fi
+}
+
 % Queue palette options before any module can load technica-colors. Colors are
 % loaded on demand by the enabled modules, not unconditionally by this wrapper.
 \ifx\technica@main@coloropts\@empty\else
@@ -47,7 +114,7 @@
 % The remaining order is conventional: modules declare their own dependencies
 % and provide heading fallbacks when fonts are disabled. Forward options before
 % each RequirePackage so they are available during that module's initialization.
-\iftechnica@main@fonts
+\iftechnica@main@fontsenabled
     \ifx\technica@main@fontopts\@empty\else
         \PassOptionsToPackage{\technica@main@fontopts}{technica-fonts}
     \fi
@@ -68,10 +135,11 @@
     \RequirePackage{technica-boxes}
 \fi
 
-\iftechnica@main@layout
+\iftechnica@main@loadlayout
     \ifx\technica@main@layoutopts\@empty\else
         \PassOptionsToPackage{\technica@main@layoutopts}{technica-layout}
     \fi
+    \technica@main@forwardstyles
     \RequirePackage{technica-layout}
 \fi
 

@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=red]{hyperref}
+\pagecolor{yellow}
+\color{blue}
+\parindent=19pt
+\parskip=3pt
+\makeatletter
+\let\savedsection\section
+\let\savedcaption\@makecaption
+\let\savedlink\@linkcolor
+\let\originalpagecolor\pagecolor
+\def\recordedpage{host}
+\let\savedpage\recordedpage
+\renewcommand{\pagecolor}[1]{\gdef\recordedpage{#1}\originalpagecolor{#1}}
+\let\savedink\current@color
+\makeatother
+\usepackage[GLOBAL_OPTIONS,code=false,boxes=false,macros=false]{technica}
+\begin{document}
+\makeatletter
+GLOBAL_ASSERTIONS
+\makeatother
+\section{Global styles}
+First paragraph.
+
+Second paragraph.
+\begin{itemize}\item An item.\end{itemize}
+\begin{figure}[h]\centering Example\caption{A caption.}\end{figure}
+\href{https://example.com}{A link.}
+\end{document}

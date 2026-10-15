@@ -13,10 +13,10 @@ Load it with:
 
 Global document styling is opt-in. By default, Technica provides code listings,
 callouts, and prose macros while leaving fonts and document layout to the host.
-Enable the font and layout modules independently, or enable both for full styling:
+Enable individual global styles, or use the full styling preset:
 
 ```latex
-\usepackage[fonts=true,layout=true]{technica}
+\usepackage[style=all]{technica}
 ```
 
 XeLaTeX or LuaLaTeX is recommended for best font selection. pdfLaTeX is
@@ -37,9 +37,9 @@ Select either built-in theme at package load time:
 \usepackage[theme=dark]{technica} % default: light
 ```
 
-The layout module applies the theme's page background and body text colors.
-With the default `layout=false`, the consuming document owns those colors.
-Use `layout=true,theme=dark` to apply the dark theme to the whole document.
+The `pagecolors=true` switch applies the theme’s page background and body text
+colors. By default, the consuming document owns those colors.
+Use `pagecolors=true,theme=dark` to apply the dark theme to the whole document.
 
 Callout boxes are enabled by default. Disable them with `boxes=false`, or pass
 box tuning options through `boxopts`:
@@ -332,10 +332,19 @@ and bindings follow normal TeX group scope.
 
 ## Configuration reference
 
-The `fonts` and `layout` switches default to `false`; `code`, `boxes`, and
-`macros` default to `true`. All five switches are independent. For example,
-`\usepackage[layout=true,boxes=false]{technica}` enables layout, code, and prose
-macros while retaining the host fonts. With `fonts=false`, the document is responsible for its fonts and font
+The independent `fonts`, `headings`, `paragraphs`, `lists`, `captions`,
+`pagecolors`, and `hyperlinks` switches default to `false`. A bare switch means
+`true`. `style=all` enables all seven; explicit switches override the preset
+regardless of option order. For example, both `style=all,fonts=false` and
+`fonts=false,style=all` enable every global style except fonts.
+
+`layout=true` is a shorthand for headings, paragraphs, lists, and captions;
+individual switches override it too. Page colors and hyperlink styling require
+their own opt-ins or `style=all`. Hyperlink styling configures an already loaded
+`hyperref`; it does not load it. Enabled paragraphs are unindented and spaced
+(`parindent=0pt`, `parskip=6pt plus 2pt minus 1pt`).
+
+`code`, `boxes`, and `macros` still default to `true`. With `fonts=false`, the document is responsible for its fonts and font
 encoding (for pdfLaTeX, normally `\usepackage[T1]{fontenc}`). Colors are loaded
 by whichever enabled modules need them. Components use the document’s current
 font families: code and literal prose use `\ttfamily`, callout titles and key
@@ -346,7 +355,7 @@ are passed in braces through `fontopts`, `layoutopts`, `codeopts`, `boxopts`,
 `macroopts`, and `coloropts`. `coloropts` currently accepts only `theme`; prefer
 the top-level `theme` option instead of setting it in both places.
 Module options do not enable a disabled module: `fontopts` requires `fonts=true`,
-and `layoutopts` requires `layout=true`.
+and `layoutopts` requires at least one layout style to be enabled.
 
 ### Fonts (`fontopts`)
 
@@ -381,7 +390,7 @@ existing fonts unless `kpfonts=true` is supplied; it ignores named font options.
 | `parskip` | `6pt plus 2pt minus 1pt` |
 | `parindent` | `0pt` |
 | `titlespacing` | `true`; applies Technica's section spacing |
-| `colorlinks` | `true`; styles links if `hyperref` is loaded |
+| `colorlinks` | `true`; chooses colored links when `hyperlinks=true` and `hyperref` is loaded |
 
 Technica does not load `hyperref`. Load it in the preamble to enable links;
 Technica configures link colors at the start of the document. `titlespacing=false`

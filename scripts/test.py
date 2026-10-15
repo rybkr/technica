@@ -56,6 +56,46 @@ def cases():
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
                  "listing-defaults", "number-gutter"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
+    style_features = ("fonts", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
+    template = (ROOT / "tests/global-styles.tex").read_text()
+    style_cases = [(f"style-only-{feature}", feature, {feature}) for feature in style_features]
+    style_cases.append(("style-all", "style=all", set(style_features)))
+    style_cases.append(("style-layout", "layout=true", {"headings", "paragraphs", "lists", "captions"}))
+    for feature in style_features:
+        for reverse in (False, True):
+            options = ["style=all", f"{feature}=false"]
+            if reverse:
+                options.reverse()
+            style_cases.append((f"style-override-{feature}-{reverse}", ",".join(options), set(style_features) - {feature}))
+    for name, options, enabled in style_cases:
+        assertions = []
+        for feature, saved, current in (
+            ("headings", "savedsection", "section"),
+            ("captions", "savedcaption", "@makecaption"),
+            ("pagecolors", "savedpage", "recordedpage"),
+            ("pagecolors", "savedink", "current@color"),
+            ("hyperlinks", "savedlink", "@linkcolor"),
+        ):
+            error = rf"\errmessage{{Unexpected {feature} styling}}"
+            branches = error + r"\else" if feature in enabled else r"\else" + error
+            assertions.append(rf"\ifx\{saved}\{current}{branches}\fi")
+        assertions.append(
+            r"\begin{itemize}\item Test."
+            + (r"\ifdim\itemsep=2pt\else\errmessage{List spacing missing}\fi"
+               if "lists" in enabled else
+               r"\ifdim\itemsep=4pt\else\errmessage{List spacing changed}\fi")
+            + r"\end{itemize}"
+        )
+        indent, skip = (0, 6) if "paragraphs" in enabled else (19, 3)
+        assertions.extend([
+            rf"\ifdim\parindent={indent}pt\else\errmessage{{Wrong paragraph indent}}\fi",
+            rf"\ifdim\parskip={skip}pt\else\errmessage{{Wrong paragraph spacing}}\fi",
+            r"\@ifpackageloaded{technica-fonts}" + (
+                r"{}{\errmessage{Fonts not enabled}}" if "fonts" in enabled
+                else r"{\errmessage{Fonts unexpectedly enabled}}{}"
+            ),
+        ])
+        yield name, template.replace("GLOBAL_OPTIONS", options).replace("GLOBAL_ASSERTIONS", "\n".join(assertions)), 1
     features = ("fonts", "layout", "code", "boxes", "macros")
     bodies = {
         "fonts": "Font module only.",
