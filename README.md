@@ -11,7 +11,7 @@ individual features or use `style=all` for the full preset.
 
 ## Installation
 
-A TeX installation with `listings`, `tcolorbox`, `titlesec`, `caption`, `enumitem`,
+A TeX installation with `listings`, `tcolorbox`, `titlesec`, `tocloft`, `caption`, `enumitem`,
 `microtype`, `xurl`, and their dependencies is required. XeLaTeX and LuaLaTeX also
 use `fontspec`. No shell escape or external syntax highlighter is needed.
 
@@ -106,9 +106,9 @@ absent from the text when it contains a closing brace:
 
 ## Configuration
 
-The independent `fonts`, `title`, `headings`, `paragraphs`, `lists`, `captions`,
+The independent `fonts`, `title`, `toc`, `headings`, `paragraphs`, `lists`, `captions`,
 `pagecolors`, and `hyperlinks` switches default to `false`. `style=all` enables
-all eight; explicit switches override the preset. `layout=true` enables only
+all nine; explicit switches override the preset. `layout=true` enables only
 headings, paragraphs, lists, and captions.
 
 ```latex

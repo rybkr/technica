@@ -347,14 +347,14 @@ starting point.
 
 ## Configuration reference
 
-The independent `fonts`, `title`, `headings`, `paragraphs`, `lists`, `captions`,
+The independent `fonts`, `title`, `toc`, `headings`, `paragraphs`, `lists`, `captions`,
 `pagecolors`, and `hyperlinks` switches default to `false`. A bare switch means
-`true`. `style=all` enables all eight; explicit switches override the preset
+`true`. `style=all` enables all nine; explicit switches override the preset
 regardless of option order. For example, both `style=all,fonts=false` and
 `fonts=false,style=all` enable every global style except fonts.
 
 `layout=true` is a shorthand for headings, paragraphs, lists, and captions;
-individual switches override it too. Title, page colors, and hyperlink styling require
+individual switches override it too. Title, TOC, page colors, and hyperlink styling require
 their own opt-ins or `style=all`. Hyperlink styling configures an already loaded
 `hyperref`; it does not load it. Enabled paragraphs are unindented and spaced
 (`parindent=0pt`, `parskip=6pt plus 2pt minus 1pt`).
@@ -371,6 +371,23 @@ are passed in braces through `fontopts`, `layoutopts`, `codeopts`, `boxopts`,
 the top-level `theme` option instead of setting it in both places.
 Module options do not enable a disabled module: `fontopts` requires `fonts=true`,
 and `layoutopts` requires at least one layout style to be enabled.
+
+### Table of contents (`toc`)
+
+`toc=true` enables TOC styling through `tocloft`; it is also included in
+`style=all`, but not `layout=true`. Use `toc=false` to retain host TOC styling.
+The Contents title uses Technica's unnumbered section typography and spacing,
+independently of `headings`. Section entries and page numbers use bold heading
+text, with extra space between sections. Subsections use regular body text and
+retain the class's indentation. Page numbers are right-aligned with muted dot
+leaders. Chapter entries in `report` and `book` use the heading font.
+
+The document still calls `\tableofcontents` and controls `\contentsname`,
+`tocdepth`, numbering, and placement. When `hyperref` is loaded, entries and page
+numbers are clickable without link coloring or borders; this setting is local
+to the TOC. Technica does not load `hyperref`. Disable `toc` when another package
+or custom class owns TOC presentation. Standard `article`, `report`, and `book`
+classes are tested.
 
 ### Document title (`title`)
 

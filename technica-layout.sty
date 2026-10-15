@@ -29,6 +29,7 @@
 
 
 \DeclareBoolOption[false]{title}
+\DeclareBoolOption[false]{toc}
 \DeclareBoolOption[true]{headings}
 \DeclareBoolOption[true]{paragraphs}
 \DeclareBoolOption[true]{lists}
@@ -196,6 +197,36 @@
         {0pt}{10pt plus 3pt minus 1pt}{3pt plus 1pt}
 \fi
 
+\fi
+
+% TOC presentation is independent of body headings and paragraph styling.
+% tocloft retains class entry levels, numbering, depth, and page handling.
+\iftechnica@layout@toc
+\RequirePackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\Large\technicaheadingfont}
+\setlength{\cftbeforetoctitleskip}{18pt plus 6pt minus 2pt}
+\setlength{\cftaftertoctitleskip}{9pt plus 2pt}
+\renewcommand{\cftsecfont}{\technicaheadingfont}
+\renewcommand{\cftsecpagefont}{\technicaheadingfont}
+\setlength{\cftbeforesecskip}{6pt plus 1pt}
+\renewcommand{\cftsecdotsep}{\cftdotsep}
+\renewcommand{\cftsecleader}{\normalfont\color{TechnicaMutedInk}\cftdotfill{\cftsecdotsep}}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+\setlength{\cftbeforesubsecskip}{0pt}
+\renewcommand{\cftsubsecleader}{\normalfont\color{TechnicaMutedInk}\cftdotfill{\cftsubsecdotsep}}
+% Chapter entries retain the class hierarchy in report/book documents.
+\@ifundefined{cftchapfont}{}{%
+    \renewcommand{\cftchapfont}{\technicaheadingfont}%
+    \renewcommand{\cftchappagefont}{\technicaheadingfont}%
+}
+% Keep link setup local and work with hyperref loaded before or after Technica.
+\AddToHook{cmd/tableofcontents/before}{%
+    \begingroup
+    \parskip=0pt
+    \@ifpackageloaded{hyperref}{\hypersetup{hidelinks,linktoc=all}}{}%
+}
+\AddToHook{cmd/tableofcontents/after}{\endgroup}
 \fi
 
 \endinput

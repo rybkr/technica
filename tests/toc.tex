@@ -1,0 +1,38 @@
+\documentclass{DOCUMENT_CLASS}
+HYPERREF_BEFORE
+\usepackage[toc,paragraphs,code=false,boxes=false,macros=false]{technica}
+HYPERREF_AFTER
+\renewcommand{\contentsname}{Document guide}
+\setcounter{tocdepth}{2}
+\makeatletter
+\newcommand{\checktoclinks}{%
+  \@ifpackageloaded{hyperref}{%
+    \ifHy@colorlinks\errmessage{TOC links are colored}\fi
+    \ifnum\Hy@linktoc=3\else\errmessage{TOC links incomplete}\fi
+  }{}%
+}
+\makeatother
+\begin{document}
+\makeatletter
+\let\savedlinkcolor\@linkcolor
+\makeatother
+\addtocontents{toc}{\protect\checktoclinks}
+\tableofcontents
+\makeatletter
+\ifx\savedlinkcolor\@linkcolor\else\errmessage{TOC changed body links}\fi
+\@ifpackageloaded{hyperref}{\ifHy@colorlinks\else\errmessage{TOC hid body links}\fi}{}
+\ifdim\parskip=6pt\else\errmessage{TOC changed paragraph spacing}\fi
+\ifnum\value{tocdepth}=2\else\errmessage{TOC changed depth}\fi
+\makeatother
+\clearpage
+CHAPTER
+\section{Starting points}
+\subsection{A short entry}
+\subsection{A longer entry that wraps naturally onto another line to demonstrate indentation and page number alignment in the table of contents}
+\subsubsection{Hidden level}
+Body.
+\newpage
+\section{Further reading}
+\subsection{References and next steps}
+Body.
+\end{document}

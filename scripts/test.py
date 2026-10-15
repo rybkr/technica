@@ -62,6 +62,16 @@ def cases():
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
                  "listing-defaults", "number-gutter", "number-gutter-color"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
+    toc_template = (ROOT / "tests/toc.tex").read_text()
+    for cls in ("article", "report", "book"):
+        for order in ("before", "after", "none"):
+            hyperref = r"\usepackage[colorlinks=true,linkcolor=red]{hyperref}"
+            source = toc_template.replace("DOCUMENT_CLASS", cls).replace(
+                "HYPERREF_BEFORE", hyperref if order == "before" else ""
+            ).replace("HYPERREF_AFTER", hyperref if order == "after" else "").replace(
+                "CHAPTER", r"\chapter{Foundations}" if cls != "article" else ""
+            )
+            yield f"toc-{cls}-{order}", source, 2
     components = (ROOT / "examples/components.tex").read_text()
     for theme in ("light", "dark"):
         yield f"components-{theme}", rf"\PassOptionsToPackage{{theme={theme}}}{{technica}}" + "\n" + components, 2
@@ -89,7 +99,7 @@ def cases():
         r"\iftechnica@main@pagecolorsenabled\else\errmessage{Preset not applied}\fi"
         r"\makeatother Preset resolved after merging.",
     ), 1
-    style_features = ("fonts", "title", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
+    style_features = ("fonts", "title", "toc", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
     template = (ROOT / "tests/global-styles.tex").read_text()
     style_cases = [(f"style-only-{feature}", feature, {feature}) for feature in style_features]
     style_cases.append(("style-all", "style=all", set(style_features)))
@@ -101,7 +111,10 @@ def cases():
                 options.reverse()
             style_cases.append((f"style-override-{feature}-{reverse}", ",".join(options), set(style_features) - {feature}))
     for name, options, enabled in style_cases:
-        assertions = []
+        assertions = [r"\@ifpackageloaded{tocloft}" + (
+            r"{}{\errmessage{TOC not enabled}}" if "toc" in enabled
+            else r"{\errmessage{TOC unexpectedly enabled}}{}"
+        )]
         for feature, saved, current in (
             ("headings", "savedsection", "section"),
             ("captions", "savedcaption", "@makecaption"),
@@ -176,7 +189,13 @@ def cases():
 
 def check_case(name, pdf):
     text = pdf_text(pdf)
-    if name == "number-gutter-color":
+    if name.startswith("toc-"):
+        first_page = text.split("\f")[0]
+        require_text(first_page, "Document guide", "Starting points", "A short entry",
+                     "Further reading", "References and next steps")
+        if "Hidden level" in first_page:
+            raise RuntimeError("TOC ignored document depth")
+    elif name == "number-gutter-color":
         xml = ET.fromstring(subprocess.check_output(
             ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
         ))
