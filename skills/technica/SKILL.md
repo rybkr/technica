@@ -39,7 +39,7 @@ and title placement to the class. `article` is supported; basic `report` and
   output unprefixed. Only the first whitespace-delimited command word is colored; arguments
   and operators use normal ink, without a keyword dictionary. Set `listingopts={terminalprompt={>>>}}` (or `terminalprompt={$}`)
   for another marker; do not include the separating space in the option. Output
-  matching that prefix will also be highlighted. `\inlinesh` needs no prompt.
+  matching that prefix will also be highlighted. `\inlinesh` uses the same first-word highlighting without a prompt.
 - Choose `aside`, `note`, `explanation`, `advice`, or `warning` by meaning.
   Use `aside` for an optional digression from the main argument.
 - Use `\shcode{...}` and `\cppcode{...}` inside headings, captions, or other

@@ -173,7 +173,10 @@ convention, not a shell parser: output beginning with the configured marker and
 a space is also treated as input. Choose another marker if output would collide.
 Continuation lines need their own prompt to receive input coloring. Existing
 `$ ` transcripts must change to `❯ ` or select `terminalprompt={$}`.
-`\inlinesh` colors its entire contents as input without requiring a prompt.
+`\inlinesh` uses the same first-word highlighting without requiring a prompt:
+`\inlinesh{man ps}` colors `man` with `TechnicaCommand` and `ps` with
+`TechnicaInk`. A standalone word, including an option such as `-e`, is treated
+as a command; use `\inlinecode{-e}` for an isolated argument in normal ink.
 The default chevron is drawn independently of the document font on all engines.
 It is omitted from copied PDF text; choose an ASCII marker if copied prompts
 are needed.

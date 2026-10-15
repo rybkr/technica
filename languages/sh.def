@@ -66,7 +66,7 @@
 % Flush the complete command word before changing its color at whitespace.
 % listings splits punctuation in paths and hyphenated names into tokens.
 \def\technica@sh@space{%
-    \iftechnica@sh@terminal
+    \iftechnica@sh@highlight
         \lst@XPrintToken
         \iftechnica@sh@started
             \global\technica@sh@inputfalse
@@ -74,7 +74,7 @@
     \fi
 }
 \lst@AddToHook{Init}{%
-    \iftechnica@sh@terminal
+    \iftechnica@sh@highlight
         \let\technica@sh@originalspace\lst@ProcessSpace
         \let\technica@sh@originaltab\lst@ProcessTabulator
         \def\lst@ProcessSpace{\technica@sh@space\technica@sh@originalspace}%
@@ -84,10 +84,15 @@
 % Visual wrapping must not reset the command/argument state.
 \lst@AddToHook{InitVarsBOL}{%
     \global\technica@sh@inputfalse
+    \iftechnica@sh@highlight
+        \iftechnica@sh@terminal\else
+            \global\technica@sh@inputtrue
+        \fi
+    \fi
     \global\technica@sh@startedfalse
 }
 \def\technica@sh@style{%
-    \iftechnica@sh@terminal
+    \iftechnica@sh@highlight
         \iftechnica@sh@input
             \lst@ifwhitespace\else
                 \global\technica@sh@startedtrue
@@ -104,15 +109,16 @@
 \lstdefinestyle{technica-terminal}{
     style=technica-base,
     technicaterminal=true,
+    technicashell=true,
     terminalprompt={❯},
     literate={❯}{{\technica@sh@chevron}}1,
     backgroundcolor=\color{TechnicaTerminalBg}
 }
 
-% Inline shell snippets are all input; they have no transcript prompt or output.
+% Inline shell starts at the command word, without a transcript prompt.
 \lstdefinestyle{technica-shell}{
     style=technica-base,
-    basicstyle=\def\textquotedbl{\char34\relax}\ttfamily\small\color{TechnicaCommand}
+    technicashell=true
 }
 
 \newtcblisting[use counter=technicacode]{terminal}[1][]{

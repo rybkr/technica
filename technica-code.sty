@@ -104,11 +104,14 @@
 
 \newif\iftechnica@sh@terminal
 \lst@Key{technicaterminal}{false}[t]{\lstKV@SetIf{#1}\iftechnica@sh@terminal}
+\newif\iftechnica@sh@highlight
+\lst@Key{technicashell}{false}[t]{\lstKV@SetIf{#1}\iftechnica@sh@highlight}
 
 \lstdefinestyle{technica-base}{
     % Reset document-wide listings defaults; language styles override these.
     language={},
     technicaterminal=false,
+    technicashell=false,
     numbers=none,
     technicagutter=true,
     % Keep literal quotes usable with the host font encoding, including OT1.

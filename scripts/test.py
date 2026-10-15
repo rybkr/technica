@@ -60,7 +60,7 @@ def cases():
     for name in ("defaults", "inline", "layout", "blocks", "title", "callouts",
                  "prose-literals", "definition-loading", "definition-lists",
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
-                 "listing-defaults", "number-gutter", "number-gutter-color", "terminal-prompts"):
+                 "listing-defaults", "number-gutter", "number-gutter-color", "terminal-prompts", "inline-shell"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
     argument_template = (ROOT / "tests/argument-code.tex").read_text()
     for order in ("before", "after", "none"):
@@ -212,6 +212,23 @@ def check_case(name, pdf):
                      "Further reading", "References and next steps")
         if "Hidden level" in first_page:
             raise RuntimeError("TOC ignored document depth")
+    elif name == "inline-shell":
+        xml = ET.fromstring(subprocess.check_output(
+            ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
+        ))
+        colors = {font.get("id"): font.get("color") for font in xml.iter("fontspec")}
+        nodes = [("".join(node.itertext()).strip(), colors[node.get("font")])
+                 for node in xml.iter("text")]
+        for phrase, expected_color in (("man", "#008800"), ("ps", "#0000cc"),
+                                       ("./my-tool", "#008800"), ("--flag", "#0000cc"),
+                                       ("nextcmd", "#008800"), ("argument", "#0000cc"),
+                                       ("plain-code", "#0000cc")):
+            matches = [color for value, color in nodes if value == phrase]
+            if len(matches) != 1 or any(
+                abs(int(matches[0][i:i + 2], 16) - int(expected_color[i:i + 2], 16)) > 1
+                for i in (1, 3, 5)
+            ):
+                raise RuntimeError(f"Inline shell {phrase!r}: expected {expected_color}, got {matches}")
     elif name == "terminal-prompts":
         xml = ET.fromstring(subprocess.check_output(
             ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
@@ -255,12 +272,12 @@ def check_case(name, pdf):
                        if value == phrase or (phrase == "old prompt output" and value == "$ " + phrase)]
             if len(matches) != 1 or not same_color(matches[0], expected_color):
                 raise RuntimeError(f"Terminal text {phrase!r}: expected {expected_color}, got {matches}")
-        # Only the first word is highlighted; inline shell keeps its own style.
+        # Only the first word is highlighted in both block and inline shell.
         for phrase, expected_color in (("custom-tool", "#008800"),
                                        ("-e -o pid,ppid,comm", "#0000cc"),
                                        ("--flag", "#0000cc"),
                                        ("result.txt", "#0000cc"),
-                                       ("arbitrary --flag", "#008800")):
+                                       ("arbitrary", "#008800")):
             matches = [color for value, color in nodes if phrase in value
                        and not (phrase == "--flag" and "arbitrary" in value)]
             if not matches or any(not same_color(color, expected_color) for color in matches):
