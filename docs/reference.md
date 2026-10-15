@@ -347,14 +347,14 @@ starting point.
 
 ## Configuration reference
 
-The independent `fonts`, `headings`, `paragraphs`, `lists`, `captions`,
+The independent `fonts`, `title`, `headings`, `paragraphs`, `lists`, `captions`,
 `pagecolors`, and `hyperlinks` switches default to `false`. A bare switch means
-`true`. `style=all` enables all seven; explicit switches override the preset
+`true`. `style=all` enables all eight; explicit switches override the preset
 regardless of option order. For example, both `style=all,fonts=false` and
 `fonts=false,style=all` enable every global style except fonts.
 
 `layout=true` is a shorthand for headings, paragraphs, lists, and captions;
-individual switches override it too. Page colors and hyperlink styling require
+individual switches override it too. Title, page colors, and hyperlink styling require
 their own opt-ins or `style=all`. Hyperlink styling configures an already loaded
 `hyperref`; it does not load it. Enabled paragraphs are unindented and spaced
 (`parindent=0pt`, `parskip=6pt plus 2pt minus 1pt`).
@@ -371,6 +371,19 @@ are passed in braces through `fontopts`, `layoutopts`, `codeopts`, `boxopts`,
 the top-level `theme` option instead of setting it in both places.
 Module options do not enable a disabled module: `fontopts` requires `fonts=true`,
 and `layoutopts` requires at least one layout style to be enabled.
+
+### Document title (`title`)
+
+`title=true` applies the heading family, bold weight, and `TechnicaInk` to the
+text rendered by `\maketitle`. It is included in `style=all`, but not in
+`layout=true`. Use `style=all,title=false` to retain the host title font.
+Title styling works independently of `fonts` and `headings`; with fonts disabled,
+it uses the host sans family.
+
+The class retains its title size, spacing, alignment, author/date formatting,
+and title-page behavior. Standard `article`, `report`, and `book` titles use
+this styling. Custom title implementations that do not render `\@title`, or
+that explicitly select another font inside the title text, may bypass it.
 
 ### Fonts (`fontopts`)
 

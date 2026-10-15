@@ -69,8 +69,9 @@ The `hyperlinks` switch, included in `style=all`, styles an already loaded
 The supported class is standard `article`. Basic `report` and `book` documents
 are also tested, but their chapter headings remain under the class's control.
 Other classes are untested. Leave global styling disabled when the class should
-own it. Technica does not load `geometry` or redefine `\maketitle`; page format
-and title design belong to the consuming document.
+own it. Technica does not load `geometry`. Page format and title layout belong to the
+consuming document. `style=all` styles the title text with the heading family,
+bold weight, and theme ink; use `title=false` to retain the host title font.
 
 ## Writing with Technica
 
@@ -99,9 +100,9 @@ absent from the text when it contains a closing brace:
 
 ## Configuration
 
-The independent `fonts`, `headings`, `paragraphs`, `lists`, `captions`,
+The independent `fonts`, `title`, `headings`, `paragraphs`, `lists`, `captions`,
 `pagecolors`, and `hyperlinks` switches default to `false`. `style=all` enables
-all seven; explicit switches override the preset. `layout=true` enables only
+all eight; explicit switches override the preset. `layout=true` enables only
 headings, paragraphs, lists, and captions.
 
 ```latex

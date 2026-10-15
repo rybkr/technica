@@ -16,6 +16,7 @@
 \DeclareStringOption[]{config}
 \DeclareStringOption[]{style}
 \DeclareStringOption[]{fonts}[true]
+\DeclareStringOption[]{title}[true]
 \DeclareStringOption[]{headings}[true]
 \DeclareStringOption[]{paragraphs}[true]
 \DeclareStringOption[]{lists}[true]
@@ -50,7 +51,7 @@
 \cs_new_protected:Npn \__technica_collect:nn #1#2
   { \tl_put_right:Nn \l__technica_document_options_tl { #1={#2}, } }
 \clist_const:Nn \c__technica_document_option_keys_clist
-  {style,fonts,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
+  {style,fonts,title,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
    fontopts,coloropts,theme,layout,layoutopts,code,codeopts,boxes,boxopts,macros,macroopts}
 \clist_map_inline:Nn \c__technica_document_option_keys_clist
   {
@@ -126,7 +127,7 @@
         \PackageError{technica}{Unknown style `\technica@main@style'}{Use style=all or omit style.}
     \fi
 \fi
-\def\technica@main@layoutfeatures{headings,paragraphs,lists,captions,pagecolors,hyperlinks}
+\def\technica@main@layoutfeatures{title,headings,paragraphs,lists,captions,pagecolors,hyperlinks}
 \def\technica@main@forwardstyles{%
     % Resolved switches follow layoutopts so wrapper controls remain authoritative.
     \@for\technica@main@feature:=\technica@main@layoutfeatures\do{%
@@ -164,6 +165,10 @@
     \def\technica@main@default{false}%
     \iftechnica@main@layout
         \def\technica@main@default{true}%
+    \fi
+    \def\technica@main@titlename{title}%
+    \ifx\technica@main@feature\technica@main@titlename
+        \def\technica@main@default{false}%
     \fi
     \def\technica@main@pagecolorsname{pagecolors}%
     \def\technica@main@hyperlinksname{hyperlinks}%

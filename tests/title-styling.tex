@@ -1,0 +1,28 @@
+\documentclass[CLASS_OPTIONS]{DOCUMENT_CLASS}
+\usepackage[title,headings=false,code=false,boxes=false,macros=false]{technica}
+\usepackage[pdfusetitle]{hyperref}
+\makeatletter
+\newcommand{\checktitle}{%
+  \ifx\f@family\sfdefault\else\errmessage{Wrong title family}\fi
+  \ifx\f@series\bfdefault\else\errmessage{Wrong title weight}\fi
+  \let\actualsize\f@size
+  \begingroup\LARGE\xdef\expectedsize{\f@size}\endgroup
+  \ifx\actualsize\expectedsize\else\errmessage{Title size changed}\fi
+  \let\actualink\current@color
+  \begingroup\color{TechnicaInk}\global\let\expectedink\current@color\endgroup
+  \ifx\actualink\expectedink\else\errmessage{Wrong title color}\fi
+}
+\newcommand{\checkbodyfont}{%
+  \ifx\f@family\rmdefault\else\errmessage{Title family leaked}\fi
+  \ifx\f@series\mddefault\else\errmessage{Title weight leaked}\fi
+}
+\pdfstringdefDisableCommands{\let\checktitle\@empty\let\checkbodyfont\@empty}
+\makeatother
+% A declaration after begin-document must also receive the title styling.
+\begin{document}
+\title{\checktitle Styled title\thanks{Acknowledgment retained.}}
+\author{\checkbodyfont Author retained}
+\date{\checkbodyfont Date retained}
+\maketitle
+\checkbodyfont Body retained.
+\end{document}

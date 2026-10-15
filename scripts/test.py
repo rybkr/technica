@@ -85,7 +85,7 @@ def cases():
         r"\iftechnica@main@pagecolorsenabled\else\errmessage{Preset not applied}\fi"
         r"\makeatother Preset resolved after merging.",
     ), 1
-    style_features = ("fonts", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
+    style_features = ("fonts", "title", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
     template = (ROOT / "tests/global-styles.tex").read_text()
     style_cases = [(f"style-only-{feature}", feature, {feature}) for feature in style_features]
     style_cases.append(("style-all", "style=all", set(style_features)))
@@ -124,7 +124,18 @@ def cases():
                 else r"{\errmessage{Fonts unexpectedly enabled}}{}"
             ),
         ])
-        yield name, template.replace("GLOBAL_OPTIONS", options).replace("GLOBAL_ASSERTIONS", "\n".join(assertions)), 1
+        title_assertion = (
+            r"\ifx\f@family\sfdefault\else\errmessage{Title family missing}\fi"
+            r"\ifx\f@series\bfdefault\else\errmessage{Title weight missing}\fi"
+            if "title" in enabled else
+            r"\ifx\f@family\rmdefault\else\errmessage{Title family changed}\fi"
+            r"\ifx\f@series\mddefault\else\errmessage{Title weight changed}\fi"
+        )
+        yield name, template.replace("GLOBAL_OPTIONS", options).replace("GLOBAL_ASSERTIONS", "\n".join(assertions)).replace("TITLE_ASSERTIONS", title_assertion), 1
+    title_template = (ROOT / "tests/title-styling.tex").read_text()
+    for cls, cls_options in (("article", ""), ("article", "titlepage"),
+                             ("article", "twocolumn"), ("report", ""), ("book", "")):
+        yield f"title-styling-{cls}-{cls_options or 'default'}", title_template.replace("DOCUMENT_CLASS", cls).replace("CLASS_OPTIONS", cls_options), 1
     features = ("fonts", "layout", "code", "boxes", "macros")
     bodies = {
         "fonts": "Font module only.",
@@ -172,6 +183,9 @@ def check_case(name, pdf):
         require_text(" ".join(text.split()), "First block: 1. Source block: 6.", "legacy = works", "Build session")
         if "EXCLUDED" in text:
             raise RuntimeError("Source inclusion ignored firstline/lastline")
+    elif name.startswith("title-styling-"):
+        require_text(text, "Styled title", "Author retained", "Date retained",
+                     "Body retained.", "Acknowledgment retained.")
     elif name == "title":
         require_text(text, "Custom title retained.")
     elif name == "long-code":

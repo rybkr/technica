@@ -16,10 +16,17 @@
 \let\savedink\current@color
 \makeatother
 \usepackage[GLOBAL_OPTIONS,code=false,boxes=false,macros=false]{technica}
+\makeatletter
+\newcommand{\checktitlefont}{TITLE_ASSERTIONS}
+\makeatother
+\title{\checktitlefont Global styles}
+\author{Technica}
+\date{}
 \begin{document}
 \makeatletter
 GLOBAL_ASSERTIONS
 \makeatother
+\maketitle
 \section{Global styles}
 First paragraph.
 

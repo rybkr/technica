@@ -4,7 +4,7 @@
 % ------------------------------------------------------------------------------
 % Purpose
 % ------------------------------------------------------------------------------
-% Styles paragraph spacing, captions, and section typography. All tuneable
+% Styles title text, paragraph spacing, captions, and section typography. All tuneable
 % values are exposed as package options; structural
 % decisions (heading hierarchy, caption style, list rhythm) are house defaults.
 % ------------------------------------------------------------------------------
@@ -22,12 +22,13 @@
 %               vertical rhythm).
 %
 % headings, paragraphs, lists, captions: independent typography switches.
-% pagecolors, hyperlinks: opt-in page and link styling.
+% title, pagecolors, hyperlinks: opt-in title, page, and link styling.
 % colorlinks:   Boolean. False suppresses colored hyperlinks (for print),
 %               only when hyperlinks=true.
 % ------------------------------------------------------------------------------
 
 
+\DeclareBoolOption[false]{title}
 \DeclareBoolOption[true]{headings}
 \DeclareBoolOption[true]{paragraphs}
 \DeclareBoolOption[true]{lists}
@@ -155,14 +156,24 @@
 % ------------------------------------------------------------------------------
 % \technicaheadingfont is public so other Technica modules can align with the
 % same heading face, weight, and colour.
-\iftechnica@layout@headings
-\RequirePackage{titlesec}
-
 \providecommand{\technicaheadingfamily}{\sffamily}
 
 \newcommand{\technicaheadingfont}{%
     \normalfont\technicaheadingfamily\bfseries\color{TechnicaInk}%
 }
+
+% Style only the title text when it is typeset, retaining the class's size,
+% placement, author/date formatting, and title-page behavior. Leave metadata
+% untouched until maketitle, and copy title tokens without expanding thanks.
+\iftechnica@layout@title
+\AddToHook{cmd/maketitle/before}{%
+    \toks@\expandafter{\@title}%
+    \edef\@title{{\noexpand\technicaheadingfont\the\toks@}}%
+}
+\fi
+
+\iftechnica@layout@headings
+\RequirePackage{titlesec}
 
 \titleformat{\section}
     {\Large\technicaheadingfont}{\thesection}{0.75em}{}
