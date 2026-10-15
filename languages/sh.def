@@ -14,11 +14,7 @@
 }
 
 \newtcblisting[use counter=technicacode]{terminal}[1][]{
-    listing engine=listings,
-    listing only,
-    technica listing style=technica-terminal,
-    listingopts={},
-    technica-codebox,
+    technica@code@listing=technica-terminal,
     colback=TechnicaTerminalBg,
     colframe=TechnicaTerminalBorder,
     colbacktitle=TechnicaTerminalBg,

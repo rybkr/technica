@@ -123,6 +123,14 @@
     % Apply local listings settings on top of the selected language style.
     technica listing style/.store in=\technica@code@style,
     listingopts/.code={\pgfkeysalso{listing options={style=\technica@code@style,#1}}},
+    % Shared initialization; terminal colors and caller options follow this.
+    technica@code@listing/.style={
+        listing engine=listings,
+        listing only,
+        technica listing style=#1,
+        listingopts={},
+        technica-codebox
+    },
     technica-codebox/.style={
         enhanced,
         breakable,
@@ -155,11 +163,7 @@
 
 \newcommand{\technicadefinecodeblock}[2]{%
     \newtcblisting[use counter=technicacode]{#1}[2][]{%
-        listing engine=listings,
-        listing only,
-        technica listing style=#2,
-        listingopts={},
-        technica-codebox,
+        technica@code@listing={#2},
         title={##2},
         ##1%
     }%
@@ -169,11 +173,7 @@
 
 % Read snippets directly from source files. Relative paths are resolved by TeX.
 \newtcbinputlisting[use counter=technicacode]{\technicainputcode}[3][]{%
-    listing engine=listings,
-    listing only,
-    technica listing style=technica-base,
-    listingopts={},
-    technica-codebox,
+    technica@code@listing=technica-base,
     title={#2},
     listing file={#3},
     #1%

@@ -49,9 +49,10 @@
 \tl_new:N \l__technica_after_setup_tl
 \cs_new_protected:Npn \__technica_collect:nn #1#2
   { \tl_put_right:Nn \l__technica_document_options_tl { #1={#2}, } }
-\clist_map_inline:nn
+\clist_const:Nn \c__technica_document_option_keys_clist
   {style,fonts,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
    fontopts,coloropts,theme,layout,layoutopts,code,codeopts,boxes,boxopts,macros,macroopts}
+\clist_map_inline:Nn \c__technica_document_option_keys_clist
   {
     \cs_new_eq:cc {technica_saved_#1:n} {KV@technica@#1}
     \cs_set_protected:cpn {KV@technica@#1} ##1
@@ -60,9 +61,7 @@
 \ExplSyntaxOff
 \ProcessKeyvalOptions*
 \ExplSyntaxOn
-\clist_map_inline:nn
-  {style,fonts,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
-   fontopts,coloropts,theme,layout,layoutopts,code,codeopts,boxes,boxopts,macros,macroopts}
+\clist_map_inline:Nn \c__technica_document_option_keys_clist
   { \cs_set_eq:cc {KV@technica@#1} {technica_saved_#1:n} }
 
 % Merge module option lists by key, retaining TeX tokens without expansion.
@@ -127,9 +126,10 @@
         \PackageError{technica}{Unknown style `\technica@main@style'}{Use style=all or omit style.}
     \fi
 \fi
+\def\technica@main@layoutfeatures{headings,paragraphs,lists,captions,pagecolors,hyperlinks}
 \def\technica@main@forwardstyles{%
     % Resolved switches follow layoutopts so wrapper controls remain authoritative.
-    \@for\technica@main@feature:=headings,paragraphs,lists,captions,pagecolors,hyperlinks\do{%
+    \@for\technica@main@feature:=\technica@main@layoutfeatures\do{%
         \csname iftechnica@main@\technica@main@feature enabled\endcsname
             \edef\technica@main@option{\technica@main@feature=true}%
         \else
@@ -160,7 +160,7 @@
     \fi
 }
 \technica@main@resolve{fonts}{false}
-\@for\technica@main@feature:=headings,paragraphs,lists,captions,pagecolors,hyperlinks\do{%
+\@for\technica@main@feature:=\technica@main@layoutfeatures\do{%
     \def\technica@main@default{false}%
     \iftechnica@main@layout
         \def\technica@main@default{true}%
