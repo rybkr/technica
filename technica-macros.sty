@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-macros}[2026/10/11 Technica semantic prose macros]
+\ProvidesPackage{technica-macros}[2026/10/15 Technica semantic prose macros]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -58,7 +58,8 @@
 % signs. Unlike code snippets, prose labels inherit the surrounding font size.
 \lstdefinestyle{technica-prose}{
     language={},
-    basicstyle=\ttfamily,
+    % Keep literal quotes usable with the host font encoding, including OT1.
+    basicstyle=\def\textquotedbl{\char34\relax}\ttfamily,
     columns=fullflexible,
     keepspaces=true,
     upquote=true,

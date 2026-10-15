@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica}[2026/10/13 Technical writing style system]
+\ProvidesPackage{technica}[2026/10/15 Technical writing style system]
 
 % Package entry point: select modules and forward their options. Presentation
 % defaults and implementations belong to the individual technica-* packages.
@@ -8,9 +8,10 @@
 % Keep entry-point option storage separate from each module's internal macros.
 \SetupKeyvalOptions{family=technica, prefix=technica@main@}
 
-% All five modules are enabled by default. Each *opts value is a braced option
-% list passed through to its module, and is ignored when that module is disabled.
-\DeclareBoolOption[true]{fonts}
+% Global document styling (fonts and layout) is opt-in. Component modules
+% remain enabled by default. Each *opts value is a braced option list passed
+% through to its module, and is ignored when that module is disabled.
+\DeclareBoolOption[false]{fonts}
 \DeclareStringOption{fontopts}
 
 \DeclareStringOption{coloropts}
@@ -18,7 +19,7 @@
 % theme supplied through coloropts remains usable.
 \DeclareStringOption[]{theme}
 
-\DeclareBoolOption[true]{layout}
+\DeclareBoolOption[false]{layout}
 \DeclareStringOption{layoutopts}
 
 \DeclareBoolOption[true]{code}

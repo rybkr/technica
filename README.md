@@ -11,14 +11,22 @@ Load it with:
 \usepackage{technica}
 ```
 
+Global document styling is opt-in. By default, Technica provides code listings,
+callouts, and prose macros while leaving fonts and document layout to the host.
+Enable the font and layout modules independently, or enable both for full styling:
+
+```latex
+\usepackage[fonts=true,layout=true]{technica}
+```
+
 XeLaTeX or LuaLaTeX is recommended for best font selection. pdfLaTeX is
 supported with fallback fonts.
 
 The supported document class is the standard `article` class. The compilation
 suite also checks basic `report` and `book` documents: their title pages and
-chapter headings stay under the class's control. Technica styles section-level
+chapter headings stay under the class's control. With `layout=true`, Technica styles section-level
 headings, but does not provide a chapter design. Other classes are untested;
-use `layout=false` when the class should own the layout.
+leave `layout` disabled when the class should own the layout.
 
 The document class or consuming document controls page format and title styling.
 Technica does not load `geometry` or redefine `\maketitle`.
@@ -30,7 +38,8 @@ Select either built-in theme at package load time:
 ```
 
 The layout module applies the theme's page background and body text colors.
-With `layout=false`, the consuming document owns those colors.
+With the default `layout=false`, the consuming document owns those colors.
+Use `layout=true,theme=dark` to apply the dark theme to the whole document.
 
 Callout boxes are enabled by default. Disable them with `boxes=false`, or pass
 box tuning options through `boxopts`:
@@ -323,17 +332,21 @@ and bindings follow normal TeX group scope.
 
 ## Configuration reference
 
-All five feature switches default to `true` and can be disabled independently:
-`fonts`, `layout`, `code`, `boxes`, and `macros`. For example,
-`\usepackage[fonts=false,boxes=false]{technica}` keeps layout, code, and prose
-macros. With `fonts=false`, the document is responsible for its fonts and font
+The `fonts` and `layout` switches default to `false`; `code`, `boxes`, and
+`macros` default to `true`. All five switches are independent. For example,
+`\usepackage[layout=true,boxes=false]{technica}` enables layout, code, and prose
+macros while retaining the host fonts. With `fonts=false`, the document is responsible for its fonts and font
 encoding (for pdfLaTeX, normally `\usepackage[T1]{fontenc}`). Colors are loaded
-by whichever enabled modules need them.
+by whichever enabled modules need them. Components use the document’s current
+font families: code and literal prose use `\ttfamily`, callout titles and key
+labels use `\sffamily`, and callout bodies inherit the surrounding family.
 
 The top-level `theme` option defaults to `light`. Options for individual modules
 are passed in braces through `fontopts`, `layoutopts`, `codeopts`, `boxopts`,
 `macroopts`, and `coloropts`. `coloropts` currently accepts only `theme`; prefer
 the top-level `theme` option instead of setting it in both places.
+Module options do not enable a disabled module: `fontopts` requires `fonts=true`,
+and `layoutopts` requires `layout=true`.
 
 ### Fonts (`fontopts`)
 
@@ -358,7 +371,7 @@ An explicitly requested missing font produces an error. pdfLaTeX uses T1 encodin
 existing fonts unless `kpfonts=true` is supplied; it ignores named font options.
 
 ```latex
-\usepackage[fontopts={mainfont={Libertinus Serif},monofontscale=0.9}]{technica}
+\usepackage[fonts=true,fontopts={mainfont={Libertinus Serif},monofontscale=0.9}]{technica}
 ```
 
 ### Layout (`layoutopts`)

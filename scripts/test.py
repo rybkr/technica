@@ -51,7 +51,7 @@ def document(options, body="Module switches work.", document_class="article"):
 
 
 def cases():
-    for name in ("inline", "layout", "blocks", "title", "callouts",
+    for name in ("defaults", "inline", "layout", "blocks", "title", "callouts",
                  "prose-literals", "definition-loading", "definition-lists",
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
                  "listing-defaults", "number-gutter"):
@@ -67,9 +67,9 @@ def cases():
     for active in (None,) + features:
         options = ",".join(f"{feature}={'true' if feature == active else 'false'}" for feature in features)
         yield f"only-{active or 'none'}", document(options, bodies.get(active, "All modules disabled.")), 1
-    yield "no-fonts", document("fonts=false", r"\section{Fallback headings}\begin{note}Fallback callout.\end{note}"), 1
+    yield "no-fonts", document("fonts=false,layout=true", r"\section{Fallback headings}\begin{note}Fallback callout.\end{note}"), 1
     for cls in ("report", "book"):
-        yield cls, document("", r"\title{Class title}\author{Technica}\maketitle\chapter{Class chapter}\section{Section}Body.", cls), 1
+        yield cls, document("fonts=true,layout=true", r"\title{Class title}\author{Technica}\maketitle\chapter{Class chapter}\section{Section}Body.", cls), 1
     yield "long-code", document("", "\\begin{cpp}{Long listing}\n" + "\n".join(
         f"int item{i} = {i};" for i in range(100)
     ) + "\n\\end{cpp}\n"), 1

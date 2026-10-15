@@ -9,7 +9,6 @@
     sensitive=true,
     keywordstyle=[1]\color{TechnicaPrompt},
     keywordstyle=[2]\color{TechnicaCommand},
-    basicstyle=\ttfamily\small\color{TechnicaInk},
     commentstyle=\color{TechnicaComment},
     stringstyle=\color{TechnicaCommand}
 }

@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage[table,dvipsnames,svgnames,x11names]{xcolor}
+\usepackage[colorlinks=true,linkcolor=red,urlcolor=green]{hyperref}
+\pagecolor{yellow}
+\color{blue}
+\renewcommand{\rmdefault}{cmss}
+\renewcommand{\sfdefault}{cmr}
+\renewcommand{\ttdefault}{cmtt}
+\makeatletter
+\let\savedcaption\@makecaption
+\let\savedlist\@listi
+\let\savedlinkcolor\@linkcolor
+\let\savedurlcolor\@urlcolor
+\let\savedtextcolor\current@color
+\let\savedpagecolor\current@page@color
+\makeatother
+\parindent=19pt
+\parskip=3pt
+\let\savedsection\section
+\edef\savedfonts{\rmdefault,\sfdefault,\ttdefault}
+\usepackage{technica}
+\begin{document}
+\makeatletter
+\@ifpackageloaded{technica-fonts}{\errmessage{Fonts must be opt-in}}{}
+\@ifpackageloaded{technica-layout}{\errmessage{Layout must be opt-in}}{}
+\ifx\savedcaption\@makecaption\else\errmessage{Caption styling changed}\fi
+\ifx\savedlist\@listi\else\errmessage{List styling changed}\fi
+\ifx\savedlinkcolor\@linkcolor\else\errmessage{Link color changed}\fi
+\ifx\savedurlcolor\@urlcolor\else\errmessage{URL color changed}\fi
+\ifHy@colorlinks\else\errmessage{Link settings changed}\fi
+\ifx\savedtextcolor\current@color\else\errmessage{Text color changed}\fi
+\ifx\savedpagecolor\current@page@color\else\errmessage{Page color changed}\fi
+\makeatother
+\ifdim\parindent=19pt\else\errmessage{Paragraph indent changed}\fi
+\ifdim\parskip=3pt\else\errmessage{Paragraph spacing changed}\fi
+\ifx\savedsection\section\else\errmessage{Section styling changed}\fi
+\edef\currentfonts{\rmdefault,\sfdefault,\ttdefault}
+\ifx\savedfonts\currentfonts\else\errmessage{Font families changed}\fi
+\section{Host styling}
+\term{Components} remain available: \inlinecode|int value = 1;|.
+\begin{note}Default callout.\end{note}
+\end{document}
