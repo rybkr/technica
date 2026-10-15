@@ -226,15 +226,21 @@ def check_case(name, pdf):
             "echo no space": "#0000cc",
             "old prompt output": "#0000cc",
             ">>>": "#cc0000",
-            "echo custom": "#008800",
+            "custom": "#0000cc",
             "custom output ps": "#0000cc",
             "default marker output": "#0000cc",
-            "echo dollar": "#008800",
+            "dollar": "#0000cc",
             "value $ output": "#0000cc",
-            "echo restored": "#008800",
+            "restored": "#0000cc",
             "restored output": "#0000cc",
             "ps ls cd": "#0000cc",
-            "WRAPPEDINPUT": "#008800",
+            "WRAPPEDINPUT": "#0000cc",
+            "./my-tool": "#008800",
+            "patharg": "#0000cc",
+            "spacedcmd": "#008800",
+            "spacedarg": "#0000cc",
+            "tabcmd": "#008800",
+            "tabarg": "#0000cc",
             "after wrapped output": "#0000cc",
         }
         nodes = [("".join(node.itertext()).strip(), colors[node.get("font")])
@@ -249,11 +255,16 @@ def check_case(name, pdf):
                        if value == phrase or (phrase == "old prompt output" and value == "$ " + phrase)]
             if len(matches) != 1 or not same_color(matches[0], expected_color):
                 raise RuntimeError(f"Terminal text {phrase!r}: expected {expected_color}, got {matches}")
-        # Program names, arguments, and shell punctuation all share input color.
-        for phrase in ("custom-tool --flag", "HOME", "result.txt", "arbitrary --flag"):
-            matches = [color for value, color in nodes if phrase in value]
-            if not matches or any(not same_color(color, "#008800") for color in matches):
-                raise RuntimeError(f"Terminal input lost its color: {phrase!r}")
+        # Only the first word is highlighted; inline shell keeps its own style.
+        for phrase, expected_color in (("custom-tool", "#008800"),
+                                       ("-e -o pid,ppid,comm", "#0000cc"),
+                                       ("--flag", "#0000cc"),
+                                       ("result.txt", "#0000cc"),
+                                       ("arbitrary --flag", "#008800")):
+            matches = [color for value, color in nodes if phrase in value
+                       and not (phrase == "--flag" and "arbitrary" in value)]
+            if not matches or any(not same_color(color, expected_color) for color in matches):
+                raise RuntimeError(f"Terminal text has wrong color: {phrase!r}: {matches}")
     elif name == "number-gutter-color":
         xml = ET.fromstring(subprocess.check_output(
             ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,

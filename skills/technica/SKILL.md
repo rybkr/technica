@@ -36,8 +36,8 @@ and title placement to the class. `article` is supported; basic `report` and
   `codeblock` and `cpp` environments with a required title, or `terminal`
   without one, for blocks. C++ blocks have line numbers by default.
 - In `terminal`, prefix input lines with `❯ ` in the first column and leave
-  output unprefixed. Commands are colored as whole lines, without a keyword
-  dictionary. Set `listingopts={terminalprompt={>>>}}` (or `terminalprompt={$}`)
+  output unprefixed. Only the first whitespace-delimited command word is colored; arguments
+  and operators use normal ink, without a keyword dictionary. Set `listingopts={terminalprompt={>>>}}` (or `terminalprompt={$}`)
   for another marker; do not include the separating space in the option. Output
   matching that prefix will also be highlighted. `\inlinesh` needs no prompt.
 - Choose `aside`, `note`, `explanation`, `advice`, or `warning` by meaning.

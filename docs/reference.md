@@ -140,11 +140,14 @@ int main() {
 #### `terminal`
 
 Terminal session block. A command line starts with `❯` followed by a literal
-space in the first column. The prompt uses `TechnicaPrompt`; the entire command
-(including arguments, operators, and arbitrary program names) uses
-`TechnicaCommand`. All other lines use `TechnicaInk`, without keyword matching.
-Wrapped command lines retain their input color. Indented markers, bare markers,
-and markers within output do not start commands.
+space in the first column. The prompt uses `TechnicaPrompt`; the first word
+uses `TechnicaCommand`, including punctuation in paths and program names.
+A space or tab ends the command word; arguments and operators use `TechnicaInk`.
+All other lines use `TechnicaInk`, without keyword matching. Visual wrapping
+preserves this distinction. This is not shell parsing: commands after pipes or
+`&&` are not highlighted separately, and quoting or escaped spaces in command
+names are not interpreted. Indented markers, bare markers, and markers within
+output do not start commands.
 
 ```latex
 \begin{terminal}

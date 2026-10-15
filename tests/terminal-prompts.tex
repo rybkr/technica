@@ -5,11 +5,13 @@
 \definecolor{TechnicaInk}{HTML}{0000CC}
 \begin{document}
 \begin{terminal}
-❯ ps
+❯ ps -e -o pid,ppid,comm
 PID TTY TIME CMD
 6172 ttys001 0:00.05 zsh
 6191 ttys001 0:00.00 ps
 ❯ custom-tool --flag "$HOME" | cat > result.txt
+❯ ./my-tool patharg
+❯   spacedcmd spacedarg
 output ps ls cd
 ❯
 not❯ command
@@ -34,6 +36,7 @@ restored output
 ❯ echo one two three four five six seven WRAPPEDINPUT
 after wrapped output
 \end{terminal}
+\lstinputlisting[style=technica-terminal]{tests/terminal-tab.sh}
 \inlinesh!arbitrary --flag "$HOME" | ps!
 
 Body ink after terminal.

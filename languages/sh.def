@@ -2,6 +2,7 @@
 
 % Draw the prompt independently of the host font on all supported engines.
 \newif\iftechnica@sh@input
+\newif\iftechnica@sh@started
 \def\technica@sh@defaultprompt{❯}
 \def\technica@sh@chevron{%
     \tikz[baseline=0pt,x=1ex,y=1ex]{%
@@ -42,6 +43,7 @@
     \fi
     \lst@length\technica@sh@promptwidth\relax
     \lst@XPrintToken
+    \global\technica@sh@startedfalse
     \lst@CArgEmptyGobble
 }
 % Unlike the literate key, preserve a trailing active space in the matcher.
@@ -61,11 +63,35 @@
         \technica@sh@installprompt
     \fi
 }
-% Reset only at physical source lines, so wrapped commands keep their color.
-\lst@AddToHook{InitVarsBOL}{\global\technica@sh@inputfalse}
+% Flush the complete command word before changing its color at whitespace.
+% listings splits punctuation in paths and hyphenated names into tokens.
+\def\technica@sh@space{%
+    \iftechnica@sh@terminal
+        \lst@XPrintToken
+        \iftechnica@sh@started
+            \global\technica@sh@inputfalse
+        \fi
+    \fi
+}
+\lst@AddToHook{Init}{%
+    \iftechnica@sh@terminal
+        \let\technica@sh@originalspace\lst@ProcessSpace
+        \let\technica@sh@originaltab\lst@ProcessTabulator
+        \def\lst@ProcessSpace{\technica@sh@space\technica@sh@originalspace}%
+        \def\lst@ProcessTabulator{\technica@sh@space\technica@sh@originaltab}%
+    \fi
+}
+% Visual wrapping must not reset the command/argument state.
+\lst@AddToHook{InitVarsBOL}{%
+    \global\technica@sh@inputfalse
+    \global\technica@sh@startedfalse
+}
 \def\technica@sh@style{%
     \iftechnica@sh@terminal
         \iftechnica@sh@input
+            \lst@ifwhitespace\else
+                \global\technica@sh@startedtrue
+            \fi
             \def\lst@thestyle{\color{TechnicaCommand}}%
         \else
             \def\lst@thestyle{\color{TechnicaInk}}%
