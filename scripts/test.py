@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build" / "tests"
 
 
-def compile_tex(engine, name, source, passes=1):
+def compile_tex(engine, name, source, passes=1, expected_error=None):
     destination = BUILD / engine / name
     destination.mkdir(parents=True, exist_ok=True)
     tex = destination / f"{name}.tex"
@@ -27,6 +27,11 @@ def compile_tex(engine, name, source, passes=1):
             cwd=destination, env=env, capture_output=True, text=True,
         )
         (destination / "compile.txt").write_text(result.stdout + result.stderr)
+        if expected_error is not None:
+            # TeX wraps diagnostics even in the middle of words.
+            if result.returncode and "".join(expected_error.split()) in "".join(result.stdout.split()):
+                return None
+            raise RuntimeError(f"{engine}/{name}: expected error {expected_error!r}\n{result.stdout[-2500:]}")
         if result.returncode:
             raise RuntimeError(f"{engine}/{name}: compilation failed\n{result.stdout[-2500:]}")
     return destination / f"{name}.pdf"
@@ -56,6 +61,30 @@ def cases():
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
                  "listing-defaults", "number-gutter"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
+    config_template = (ROOT / "tests/config.tex").read_text()
+    for reverse in (False, True):
+        options = ["config={tests/course.cfg}", "theme=light", "codeopts={arc=0pt}"]
+        if reverse:
+            options.reverse()
+        yield f"config-{reverse}", config_template.replace("CONFIG_OPTIONS", ",".join(options)), 1
+    for languages in ("sh", ""):
+        source = document(
+            "config={tests/course.cfg},codeopts={languages={" + languages + "}},macroopts={sets={}}",
+            r"\makeatletter\@ifundefined{inlinecpp}{}{\errmessage{Language list was merged}}"
+            r"\@ifundefined{term}{}{\errmessage{Macro list was merged}}\makeatother Lists replaced.",
+        )
+        yield f"config-lists-{languages or 'empty'}", source, 1
+    yield "config-disabled", document(
+        "config={tests/course.cfg},code=false",
+        r"\makeatletter\@ifpackageloaded{technica-code}{\errmessage{Code was enabled}}{}"
+        r"\makeatother Disabled module stays disabled.",
+    ), 1
+    yield "config-preset", document(
+        "config={tests/course.cfg},style=all,fonts=false,hyperlinks=false",
+        r"\makeatletter\iftechnica@main@headingsenabled\errmessage{Preset overrode explicit switch}\fi"
+        r"\iftechnica@main@pagecolorsenabled\else\errmessage{Preset not applied}\fi"
+        r"\makeatother Preset resolved after merging.",
+    ), 1
     style_features = ("fonts", "headings", "paragraphs", "lists", "captions", "pagecolors", "hyperlinks")
     template = (ROOT / "tests/global-styles.tex").read_text()
     style_cases = [(f"style-only-{feature}", feature, {feature}) for feature in style_features]
@@ -117,7 +146,9 @@ def cases():
 
 def check_case(name, pdf):
     text = pdf_text(pdf)
-    if name == "inline":
+    if name in ("config-False", "config-True"):
+        require_text(text, "Spaces are preserved", "Second hook", "Design rule", "file_name")
+    elif name == "inline":
         require_text(text, "left || right", "left | right", "cat input | sort",
                      "100% literal #1 $HOME file_name & value",
                      "if (a || b) { return a | b; }", r'''printf '%s\n' "$HOME" | sort''',
@@ -172,6 +203,20 @@ def main():
             except RuntimeError as error:
                 failures.append(str(error))
                 print(f"FAIL {engine}/{name}", flush=True)
+        for name, options, body, error in (
+            ("missing", "config={tests/nonexistent.cfg}", "", "Configuration file"),
+            ("unknown", "config={tests/config-unknown.cfg}", "", "undefined"),
+            ("nested", "config={tests/config-nested.cfg}", "", "Nested config selection"),
+            ("module-unknown", "codeopts={unknownsetting=1}", "", "unknownsetting"),
+            ("late", "", r"\technicasetup{theme=dark}", "Configuration is already closed"),
+            ("late-hook", "", r"\technicaaftersetup{}", "Configuration is already closed"),
+        ):
+            try:
+                compile_tex(engine, f"config-error-{name}", document(options, body), expected_error=error)
+                print(f"PASS {engine}/config-error-{name}", flush=True)
+            except RuntimeError as error:
+                failures.append(str(error))
+                print(f"FAIL {engine}/config-error-{name}", flush=True)
     if failures:
         raise RuntimeError("\n\n".join(failures))
 

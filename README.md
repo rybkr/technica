@@ -330,6 +330,72 @@ aliases immediately, including chains of aliases. Alias targets must be named
 colors; self-references and indirect cycles produce an error. Color definitions
 and bindings follow normal TeX group scope.
 
+## Named configuration files
+
+Select a reusable configuration explicitly at package load time:
+
+```latex
+\usepackage[config={styles/course.cfg}]{technica}
+```
+
+The file uses ordinary LaTeX syntax and the same keys as package options:
+
+```latex
+% styles/course.cfg
+\technicasetup{
+    fonts=true,
+    layout=true,
+    theme=light,
+    fontopts={monofontscale=0.9},
+    layoutopts={parskip={6pt plus 2pt minus 1pt}},
+    codeopts={languages={cpp,sh},arc=3pt},
+    boxopts={leftrule=3pt},
+    macroopts={sets=prose}
+}
+
+\technicaaftersetup{
+    \technicadefinecallout{designrule}{Design rule}{TechnicaExplanation}
+    \technicadefineinlinemacro{configkey}
+}
+```
+
+Technica reads the file before loading its modules. `\technicasetup` collects
+settings; `\technicaaftersetup` defers definitions until all enabled modules
+have loaded, before `\usepackage{technica}` returns. Enable the modules needed
+by those definitions. Both commands may occur multiple times in the file;
+settings merge and deferred blocks execute in declaration order. These commands
+are only available for configuration during this loading phase, not for later
+reconfiguration in the document.
+
+Built-in defaults are overridden by file settings, then by explicit package
+options, regardless of where `config` occurs in the option list:
+
+```latex
+\usepackage[codeopts={arc=0pt},config={styles/course.cfg},fonts=false]{technica}
+```
+
+Module option lists merge by key: this overrides `arc` while keeping the file's
+`languages`. List values themselves are replaced: `languages={sh}` selects only
+shell definitions, and `languages={}` loads none. Likewise, `sets={}` disables
+loading macro sets. An empty outer option list such as `codeopts={}` contributes
+no overrides. Repeated settings use their last value within each layer.
+
+After merging, `style=all` and `layout=true` resolve as usual: explicit individual
+feature switches beat these presets, including switches supplied by the file.
+Module options do not enable disabled modules. The top-level `theme` remains
+authoritative over `coloropts={theme=...}`; prefer the top-level key consistently.
+
+There is no automatic configuration discovery. Supply one filename, including
+its extension; paths use TeX's normal input search path, normally relative to
+the compilation working directory, not necessarily the document directory.
+A missing requested file, unknown top-level key, or unknown option for an enabled
+module produces an error. Nested `config` selection is not supported. Without
+`config`, existing package usage continues to work.
+
+Configuration files are TeX source. Keep page geometry, title design, and document
+metadata in the consuming document. See `examples/course.cfg` for a reusable
+starting point.
+
 ## Configuration reference
 
 The independent `fonts`, `headings`, `paragraphs`, `lists`, `captions`,

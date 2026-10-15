@@ -13,6 +13,7 @@
 % through to its module, and is ignored when that module is disabled.
 % Empty switch values mean "inherit the preset". Resolve them only after all
 % options are parsed, so explicit true/false always wins over style and layout.
+\DeclareStringOption[]{config}
 \DeclareStringOption[]{style}
 \DeclareStringOption[]{fonts}[true]
 \DeclareStringOption[]{headings}[true]
@@ -40,7 +41,85 @@
 \DeclareBoolOption[true]{macros}
 \DeclareStringOption{macroopts}
 
+% Collect document options without applying them until the selected file has
+% supplied its defaults. kvoptions still owns validation and bare-key defaults.
+\RequirePackage{expl3}
+\ExplSyntaxOn
+\tl_new:N \l__technica_document_options_tl
+\tl_new:N \l__technica_after_setup_tl
+\cs_new_protected:Npn \__technica_collect:nn #1#2
+  { \tl_put_right:Nn \l__technica_document_options_tl { #1={#2}, } }
+\clist_map_inline:nn
+  {style,fonts,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
+   fontopts,coloropts,theme,layout,layoutopts,code,codeopts,boxes,boxopts,macros,macroopts}
+  {
+    \cs_new_eq:cc {technica_saved_#1:n} {KV@technica@#1}
+    \cs_set_protected:cpn {KV@technica@#1} ##1
+      { \__technica_collect:nn {#1} {##1} }
+  }
+\ExplSyntaxOff
 \ProcessKeyvalOptions*
+\ExplSyntaxOn
+\clist_map_inline:nn
+  {style,fonts,headings,paragraphs,lists,captions,pagecolors,hyperlinks,
+   fontopts,coloropts,theme,layout,layoutopts,code,codeopts,boxes,boxopts,macros,macroopts}
+  { \cs_set_eq:cc {KV@technica@#1} {technica_saved_#1:n} }
+
+% Merge module option lists by key, retaining TeX tokens without expansion.
+\cs_new_protected:Npn \__technica_module_pair:nn #1#2
+  { \prop_put:cnn {l__technica_\l__technica_module_tl _prop} {#1} {{#2}} }
+\cs_new_protected:Npn \__technica_module_bare:n #1
+  { \prop_put:cnn {l__technica_\l__technica_module_tl _prop} {#1} { } }
+\tl_new:N \l__technica_module_tl
+\tl_new:N \l__technica_module_options_tl
+\cs_new_protected:Npn \__technica_merge:nn #1#2
+  {
+    \tl_set:Nn \l__technica_module_tl {#1}
+    \keyval_parse:NNn \__technica_module_bare:n \__technica_module_pair:nn {#2}
+    \tl_clear:N \l__technica_module_options_tl
+    \prop_map_inline:cn {l__technica_#1_prop}
+      {
+        \tl_put_right:Nn \l__technica_module_options_tl {##1}
+        \tl_if_empty:nF {##2}
+          { \tl_put_right:Nn \l__technica_module_options_tl {=##2} }
+        \tl_put_right:Nn \l__technica_module_options_tl {,}
+      }
+    \cs_set_eq:cN {technica@main@#1} \l__technica_module_options_tl
+  }
+\clist_map_inline:nn {fontopts,layoutopts,codeopts,boxopts,macroopts,coloropts}
+  {
+    \prop_new:c {l__technica_#1_prop}
+    \cs_set_protected:cpn {KV@technica@#1} ##1
+      { \__technica_merge:nn {#1} {##1} }
+  }
+\cs_set_protected:cpn {KV@technica@config} #1
+  { \PackageError{technica}{Nested~config~selection~is~not~supported}
+      {Select~one~file~in~the~package~options.} }
+\NewDocumentCommand \technicasetup {m} { \setkeys{technica}{#1} }
+\NewDocumentCommand \technicaaftersetup {+m}
+  { \tl_put_right:Nn \l__technica_after_setup_tl {#1} }
+\cs_new_protected:Npn \__technica_read_config:
+  {
+    \tl_if_empty:cF {technica@main@config}
+      {
+        \exp_args:Nv \file_if_exist:nTF {technica@main@config}
+          { \exp_args:Nv \file_input:n {technica@main@config} }
+          { \PackageError{technica}{Configuration~file~`\technica@main@config'~not~found}
+              {Check~the~filename~and~TeX's~input~search~path.} }
+      }
+    \exp_args:NnV \setkeys {technica} \l__technica_document_options_tl
+  }
+\ExplSyntaxOff
+% Read configuration with ordinary document catcodes, not package internals.
+\makeatother
+\csname __technica_read_config:\endcsname
+\makeatletter
+\renewcommand{\technicasetup}[1]{%
+    \PackageError{technica}{Configuration is already closed}{Use technicasetup only inside the selected config file.}%
+}
+\renewcommand{\technicaaftersetup}[1]{%
+    \PackageError{technica}{Configuration is already closed}{Use technicaaftersetup only inside the selected config file.}%
+}
 
 \def\technica@main@all{all}
 \ifx\technica@main@style\@empty\else
@@ -149,5 +228,9 @@
     \fi
     \RequirePackage{technica-macros}
 \fi
+
+% Deferred definitions see ordinary document catcodes as well.
+\makeatother
+\csname l__technica_after_setup_tl\endcsname
 
 \endinput

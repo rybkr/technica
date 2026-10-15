@@ -1,0 +1,18 @@
+\documentclass{article}
+\usepackage[CONFIG_OPTIONS]{technica}
+\makeatletter
+\ifdim\technica@code@arc=0pt\else\errmessage{Document override lost}\fi
+\ifdim\technica@code@left=11pt\else\errmessage{Configured padding lost}\fi
+\ifdim\technica@code@right=13pt\else\errmessage{Second setup lost}\fi
+\ifdim\technica@boxes@leftrule=5pt\else\errmessage{Box options lost}\fi
+\ifdim\technica@macros@keypadding=2pt\else\errmessage{Macro options lost}\fi
+\ifdim\parskip=9pt\else\errmessage{Configured paragraph spacing lost}\fi
+\iftechnica@main@headingsenabled\errmessage{Explicit heading switch lost}\fi
+\def\expectedtheme{light}
+\ifx\expectedtheme\technica@colors@theme\else\errmessage{Theme override lost}\fi
+\makeatother
+\begin{document}
+\configphrase. \configsecond. \configkey{file_name}.
+\begin{designrule}Deferred callout works.\end{designrule}
+\inlinecpp{int value} \inlinesh{make}
+\end{document}
