@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build" / "tests"
@@ -59,8 +60,11 @@ def cases():
     for name in ("defaults", "inline", "layout", "blocks", "title", "callouts",
                  "prose-literals", "definition-loading", "definition-lists",
                  "preloaded-boxes", "late-fonts", "colors", "cpp-keywords",
-                 "listing-defaults", "number-gutter"):
+                 "listing-defaults", "number-gutter", "number-gutter-color"):
         yield name, (ROOT / "tests" / f"{name}.tex").read_text(), 2 if name == "blocks" else 1
+    components = (ROOT / "examples/components.tex").read_text()
+    for theme in ("light", "dark"):
+        yield f"components-{theme}", rf"\PassOptionsToPackage{{theme={theme}}}{{technica}}" + "\n" + components, 2
     config_template = (ROOT / "tests/config.tex").read_text()
     for reverse in (False, True):
         options = ["config={tests/course.cfg}", "theme=light", "codeopts={arc=0pt}"]
@@ -159,6 +163,12 @@ def cases():
     yield "no-fonts", document("fonts=false,layout=true", r"\section{Fallback headings}\begin{note}Fallback callout.\end{note}"), 1
     for cls in ("report", "book"):
         yield cls, document("fonts=true,layout=true", r"\title{Class title}\author{Technica}\maketitle\chapter{Class chapter}\section{Section}Body.", cls), 1
+    yield "long-callout", document("pagecolors=true,theme=dark",
+        r"\begin{explanation}" + "\n\n".join(
+            f"Paragraph {i}: Keep the timing calculation separate from the operation that waits. "
+            "A pure calculation is easier to inspect and test with exact expected values."
+            for i in range(40)
+        ) + r"\end{explanation}"), 1
     yield "long-code", document("", "\\begin{cpp}{Long listing}\n" + "\n".join(
         f"int item{i} = {i};" for i in range(100)
     ) + "\n\\end{cpp}\n"), 1
@@ -166,7 +176,23 @@ def cases():
 
 def check_case(name, pdf):
     text = pdf_text(pdf)
-    if name in ("config-False", "config-True"):
+    if name == "number-gutter-color":
+        xml = ET.fromstring(subprocess.check_output(
+            ["pdftohtml", "-xml", "-stdout", str(pdf)], text=True,
+        ))
+        colors = {font.get("id"): font.get("color") for font in xml.iter("fontspec")}
+        for phrase in ("Body ink after listing.", "Body ink on next page."):
+            matches = [node for node in xml.iter("text") if phrase in "".join(node.itertext())]
+            if len(matches) != 1:
+                raise RuntimeError(f"Expected one rendered paragraph: {phrase}")
+            color = colors[matches[0].get("font")]
+            actual = tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
+            # Drivers differ by one quantization step when converting to RGB.
+            if any(abs(a - b) > 1 for a, b in zip(actual, (232, 236, 241))):
+                raise RuntimeError(f"Body ink changed after gutter measurement: {color}")
+    elif name.startswith("components-"):
+        require_text(text, "retry.cpp", "Build and inspect", "All checks passed.")
+    elif name in ("config-False", "config-True"):
         require_text(text, "Spaces are preserved", "Second hook", "Design rule", "file_name")
     elif name == "inline":
         require_text(text, "left || right", "left | right", "cat input | sort",
@@ -198,6 +224,10 @@ def check_case(name, pdf):
                      "Second author")
     elif name == "title":
         require_text(text, "Custom title retained.")
+    elif name == "long-callout":
+        require_text(text, "Paragraph 0:", "Paragraph 39:")
+        if text.count("\f") < 2:
+            raise RuntimeError("Long callout did not span pages")
     elif name == "long-code":
         require_text(text, "int item0 = 0;", "int item99 = 99;")
         if text.count("\f") < 2:
@@ -209,7 +239,7 @@ def main():
     parser.add_argument("engines", nargs="*", default=["pdflatex", "xelatex", "lualatex"])
     args = parser.parse_args()
     engines = args.engines
-    for tool in engines + ["pdftotext"]:
+    for tool in engines + ["pdftotext", "pdftohtml"]:
         if not shutil.which(tool):
             raise RuntimeError(f"Required tool not found: {tool}")
     failures = []

@@ -1,4 +1,4 @@
-.PHONY: install-hooks bundle test demo
+.PHONY: install-hooks bundle test demo components
 
 PYTHON ?= python3
 ENGINES ?= pdflatex xelatex lualatex
@@ -35,6 +35,18 @@ demo:
 	done
 	@install -m 0644 build/demo/demo.pdf output/pdf/technica-demo.pdf
 	@printf '%s\n' "Demo written to output/pdf/technica-demo.pdf"
+
+components:
+	@mkdir -p build/components output/pdf
+	@set -e; cd build/components; \
+	for theme in light dark; do \
+		for pass in 1 2; do \
+			TEXINPUTS=".:$(CURDIR)//:" $(ENGINE) -interaction=nonstopmode -halt-on-error -file-line-error \
+				-jobname="components-$$theme" "\PassOptionsToPackage{theme=$$theme}{technica}\input{$(CURDIR)/examples/components.tex}"; \
+		done; \
+	done
+	@pdfunite build/components/components-light.pdf build/components/components-dark.pdf output/pdf/technica-components.pdf
+	@printf '%s\n' "Component previews written to output/pdf/technica-components.pdf"
 
 bundle:
 	@set -e; \

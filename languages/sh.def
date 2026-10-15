@@ -17,7 +17,8 @@
     technica@code@listing=technica-terminal,
     colback=TechnicaTerminalBg,
     colframe=TechnicaTerminalBorder,
-    colbacktitle=TechnicaTerminalBg,
+    colbacktitle=TechnicaPrompt!14!TechnicaTerminalBg,
+    fonttitle=\technicaheadingfamily\small\bfseries,
     title=Terminal,
     #1
 }

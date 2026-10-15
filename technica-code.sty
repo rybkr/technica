@@ -52,7 +52,7 @@
 
 \DeclareStringOption[cpp,sh]{languages}
 \DeclareStringOption[3pt]{arc}
-\DeclareStringOption[0.6pt]{boxrule}
+\DeclareStringOption[0.4pt]{boxrule}
 \DeclareStringOption[8pt]{left}
 \DeclareStringOption[8pt]{right}
 \DeclareStringOption[8pt]{top}
@@ -70,6 +70,8 @@
 
 \tcbuselibrary{listings,breakable,skins}
 
+\providecommand{\technicaheadingfamily}{\sffamily}
+
 \makeatletter
 
 % Keep number placement inside the listing's available width. Capture listings'
@@ -85,8 +87,9 @@
 \lst@AddToHook{PreInit}{%
     \iftechnica@code@gutter
         \lst@ifdisplaystyle
+            % Keep color aftergroup resets inside the discarded measurement box.
             \setbox\@tempboxa\hbox{\normalfont
-                \lst@numberstyle{\technica@code@numberwidth}}%
+                {\lst@numberstyle{\technica@code@numberwidth}}}%
             \@tempdima=\dimexpr\wd\@tempboxa+\lst@numbersep\relax
             \ifx\lst@PlaceNumber\technica@code@leftnumbers
                 \edef\lst@xleftmargin{\the\dimexpr\lst@xleftmargin+\@tempdima\relax}%
@@ -135,20 +138,19 @@
         enhanced,
         breakable,
         arc=\technica@code@arc,
+        boxsep=0pt,
         boxrule=\technica@code@boxrule,
         colback=TechnicaCodeBg,
         colframe=TechnicaCodeBorder,
         coltitle=TechnicaInk,
-        colbacktitle=TechnicaCodeBg,
+        colbacktitle=TechnicaCodeBorder!14!TechnicaCodeBg,
         fonttitle=\ttfamily\small\bfseries,
-        attach boxed title to top left={xshift=8pt,yshift=-2pt},
-        boxed title style={
-            empty,
-            left=0pt,
-            right=0pt,
-            top=0pt,
-            bottom=0pt
-        },
+        % Keep filenames inside a shallow header, distinct from source text.
+        titlerule=\technica@code@boxrule,
+        lefttitle=\technica@code@left,
+        righttitle=\technica@code@right,
+        toptitle=5pt,
+        bottomtitle=5pt,
         left=\technica@code@left,
         right=\technica@code@right,
         top=\technica@code@top,

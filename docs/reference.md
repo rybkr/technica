@@ -427,13 +427,17 @@ leaves section spacing to `titlesec`; it still applies heading typography.
 
 ### Code (`codeopts`) and callouts (`boxopts`)
 
+Listings use inset filename headers; terminals use a warmer header with the
+heading family. Callout labels sit inside the tinted panel beside its accent
+rule. Padding options specify the interior inset, without extra box padding.
+
 | Option | Code default | Callout default |
 | --- | --- | --- |
 | `arc` | `3pt` | `3pt` |
 | `left`, `right` | `8pt`, `8pt` | `10pt`, `12pt` |
 | `top`, `bottom` | `8pt`, `8pt` | `8pt`, `8pt` |
 | `beforeskip`, `afterskip` | `10pt plus 2pt minus 1pt` | `10pt plus 2pt minus 1pt` |
-| `boxrule` | `0.6pt` | Not applicable |
+| `boxrule` | `0.4pt` | Not applicable |
 | `languages` | `{cpp,sh}`; empty loads no language definitions | Not applicable |
 | `leftrule` | Not applicable | `3pt` |
 | `backmix`, `titlemix` | Not applicable | `6`, `6`; percentage of accent mixed into the page color |

@@ -1,0 +1,91 @@
+% Visual specimen: compile twice with XeLaTeX from the repository root.
+% To preview dark mode, pass theme=dark to technica before inputting this file.
+\documentclass[10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[style=all]{technica}
+\usepackage{hyperref}
+\pagestyle{empty}
+\begin{document}
+\section*{Code and command output}
+A retry policy is easier to review when its implementation and observed behavior
+are kept together. Source listings carry filenames; terminal sessions describe
+an action and its output.
+
+\begin{cpp}[label=code:delay]{retry.cpp}
+#include <algorithm>
+#include <chrono>
+
+using namespace std::chrono_literals;
+
+std::chrono::milliseconds retry_delay(unsigned retry) {
+    auto delay = 100ms;
+    constexpr auto cap = 1600ms;
+    while (retry > 0 && delay < cap) {
+        delay = std::min(delay * 2, cap);
+        --retry;
+    }
+    return delay;
+}
+\end{cpp}
+
+\begin{terminal}[title={Build and inspect}]
+$ clang++ -std=c++17 retry.cpp -o retry
+$ ./retry
+attempt 1: 100 ms
+attempt 2: 200 ms
+attempt 3: 400 ms
+attempt 4: 800 ms
+attempt 5: 1600 ms
+\end{terminal}
+
+\begin{codeblock}{config/retry.conf}
+initial_delay_ms = 100
+maximum_delay_ms = 1600
+maximum_retries = 5
+\end{codeblock}
+
+\begin{note}
+Listing~\ref{code:delay} calculates a delay; it does not sleep or send a request.
+Keep those effects separate from the policy.
+\end{note}
+
+\newpage
+\section*{Notes that support the argument}
+Callouts identify the role of a passage. Their labels and accent colors help a
+reader distinguish context, explanation, advice, and risk without interrupting
+the surrounding text.
+
+\begin{note}
+The initial request is not a retry. A budget of five retries permits up to six
+attempts in total.
+\end{note}
+
+\begin{explanation}
+Increasing the delay gives a busy service time to recover. The ceiling keeps
+individual waits bounded; a separate budget bounds the number of attempts.
+
+Five retries wait for a total of 3100 milliseconds, excluding the time spent
+performing the operation itself.
+\end{explanation}
+
+\begin{advice}
+For many clients, add random variation to the delay. Otherwise, clients that
+fail together may also retry together and create another burst of traffic.
+\end{advice}
+
+\begin{warning}
+A timeout does not prove that an operation failed. Retrying a payment or a write
+can duplicate its effect unless the operation is safe to repeat.
+\end{warning}
+
+\subsection*{A narrower reading column}
+\begin{minipage}{0.66\linewidth}
+\begin{cpp}[listingopts={numbers=none}]{A single decision}
+return std::min(delay * 2, cap);
+\end{cpp}
+\begin{terminal}[title={Run the checks}]
+$ make test
+All checks passed.
+\end{terminal}
+\end{minipage}
+\end{document}

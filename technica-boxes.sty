@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{technica-boxes}[2026/10/11 Technica callout boxes]
+\ProvidesPackage{technica-boxes}[2026/10/15 Technica callout boxes]
 
 % ------------------------------------------------------------------------------
 % Purpose
@@ -65,9 +65,11 @@
 
 \tcbset{
     technica-callout-style/.style 2 args={
-        enhanced,
+        enhanced jigsaw,
         breakable,
+        parbox=false,
         arc=\technica@boxes@arc,
+        boxsep=0pt,
         colback=#1!\technica@boxes@backmix!TechnicaPaper,
         coltext=TechnicaInk,
         colframe=#1,
@@ -83,14 +85,12 @@
         coltitle=#1!85!TechnicaInk,
         colbacktitle=#1!\technica@boxes@titlemix!TechnicaPaper,
         fonttitle=\technicaheadingfamily\small\bfseries,
-        attach boxed title to top left={xshift=10pt,yshift=-2pt},
-        boxed title style={
-            empty,
-            left=0pt,
-            right=0pt,
-            top=0pt,
-            bottom=1pt
-        }
+        % An inset label shares the body inset; no text straddles the border.
+        titlerule=0pt,
+        lefttitle=\technica@boxes@left,
+        righttitle=\technica@boxes@right,
+        toptitle=\technica@boxes@top,
+        bottomtitle=2pt
     }
 }
 

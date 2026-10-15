@@ -136,6 +136,10 @@ merging rules and deferred definitions.
 View the [demo PDF](output/pdf/technica-demo.pdf) or build it from
 [examples/demo.tex](examples/demo.tex) with `make demo`.
 
+Compare the [component previews](output/pdf/technica-components.pdf) in light and
+dark themes, built from [examples/components.tex](examples/components.tex) with
+`make components` (requires Poppler's `pdfunite`).
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the source layout, demo build options,
 regression checks, and commit hooks.
 

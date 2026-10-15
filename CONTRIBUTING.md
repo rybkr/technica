@@ -40,15 +40,20 @@ make test                         # pdfLaTeX, XeLaTeX, and LuaLaTeX
 make test ENGINES=pdflatex        # one engine
 ```
 
-The tests require Python 3 and Poppler's `pdftotext`, plus the selected TeX
-engines. Outputs and logs go into `build/tests/<engine>/<case>/`.
+The tests require Python 3 and Poppler's `pdftotext` and `pdftohtml`, plus the
+selected TeX engines. Outputs and logs go into `build/tests/<engine>/<case>/`.
 
 The checks compile actual documents and inspect PDF text for literal characters,
 line numbers, selected source lines, and resolved references. They also exercise
 module switches, retained title blocks, dark-theme callout text, basic class
 compatibility, and code spanning pages. Regression cases also cover literal
 prose, scoped definition loading, package load order, palette overrides and
-alias chains, and C++ keyword recognition. Overfull boxes fail the checks.
+alias chains, C++ keyword recognition, and rendered body colors after listings. Overfull boxes fail the checks.
 
 Run `make install-hooks` to enable the pre-commit check requiring today's
 `\ProvidesPackage` date in staged `.sty` files.
+
+For component styling changes, run `make components` (requires Poppler's
+`pdfunite`) and inspect `output/pdf/technica-components.pdf`. This compiles
+[examples/components.tex](examples/components.tex) in both themes. It covers all callouts, numbered and
+unnumbered listings, terminals, and narrower columns.
