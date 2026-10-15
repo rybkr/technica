@@ -1,5 +1,5 @@
 ---
-name: technica
+name: Technica
 description: Create and edit LaTeX documents using the Technica style package. Use when the user requests Technica styling or the document already loads Technica.
 ---
 
