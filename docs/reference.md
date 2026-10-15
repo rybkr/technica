@@ -265,7 +265,8 @@ color you want.
 | `warning` | Risk, pitfall, or common mistake |
 
 An `aside` is a detour readers can skip; a `note` supports the current point.
-Both use the neutral note styling.
+Asides use a slate-tinted panel, a solid neutral left rule, and a bold label.
+Their body text retains normal size and contrast. Notes use a blue-tinted panel.
 
 ```latex
 \begin{aside}
@@ -498,7 +499,10 @@ leaves section spacing to `titlesec`; it still applies heading typography.
 
 Listings use inset filename headers; terminals use a warmer header with the
 heading family. Callout labels sit inside the tinted panel beside its accent
-rule. Padding options specify the interior inset, without extra box padding.
+rule. The `aside` uses `TechnicaMutedInk` for its rule (3pt by default),
+a `TechnicaInk` label, and a fixed 12% slate tint for both background areas
+instead of `backmix` and `titlemix`.
+Padding options specify the interior inset, without extra box padding.
 
 | Option | Code default | Callout default |
 | --- | --- | --- |

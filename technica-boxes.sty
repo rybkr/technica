@@ -5,8 +5,7 @@
 % Purpose
 % ------------------------------------------------------------------------------
 % Owns semantic callout environments. Built-in and user-defined callouts share
-% one visual treatment so documents can add domain-specific boxes without
-% forking the house style.
+% a base treatment; asides use an unfilled variant for optional digressions.
 %
 % Public API:
 %   \technicadefinecallout{<environment>}{<title>}{<color>}
@@ -103,7 +102,14 @@
     \newtcolorbox{#1}{technica-callout-style={#3}{#2}}%
 }
 
-\technicadefinecallout{aside}{Aside}{TechnicaNote}
+% A slate panel distinguishes optional digressions from blue supporting notes.
+% Keep a visible fill, a full-width rule, and full-strength text.
+\newtcolorbox{aside}{%
+    technica-callout-style={TechnicaMutedInk}{Aside},
+    colback=TechnicaMutedInk!12!TechnicaPaper,
+    colbacktitle=TechnicaMutedInk!12!TechnicaPaper,
+    coltitle=TechnicaInk
+}
 
 \technicadefinecallout{note}{Note}{TechnicaNote}
 
